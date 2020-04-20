@@ -8,11 +8,12 @@ import (
 	"testing"
 )
 
+// This test assumes that it is running from a git repository and asserts that it can be parsed
 func TestNewRepo(t *testing.T) {
 	fs := memfs.New()
 	createGitRepo(fs)
 
-	repo, err := NewRepo(fs)
+	repo, err := NewRepo()
 	check.Ok(t, err)
 	log, err := repo.gitRepo.Log(&git.LogOptions{})
 	check.Ok(t, err)
@@ -25,8 +26,7 @@ func TestTagsForHead(t *testing.T) {
 	createGitRepo(fs)
 	createVersionTag(fs, "app-0.0.1")
 
-	repo, err := NewRepo(fs)
-	check.Ok(t, err)
+	repo := newTestRepo(fs)
 	tagsForHead, err := repo.TagsForHead()
 	check.Ok(t, err)
 	check.Equals(t, 1, len(tagsForHead))
@@ -39,8 +39,7 @@ func TestTagsForHeadForMultipleTags(t *testing.T) {
 	createVersionTag(fs, "app-0.0.1-alpha")
 	createVersionTag(fs, "app-0.0.1")
 
-	repo, err := NewRepo(fs)
-	check.Ok(t, err)
+	repo := newTestRepo(fs)
 	tagsForHead, err := repo.TagsForHead()
 	check.Ok(t, err)
 	check.Equals(t, 2, len(tagsForHead))
@@ -58,8 +57,7 @@ func TestTagsForHeadAreSorted(t *testing.T) {
 		expectedTags = append(expectedTags, tag)
 	}
 
-	repo, err := NewRepo(fs)
-	check.Ok(t, err)
+	repo := newTestRepo(fs)
 	tagsForHead, err := repo.TagsForHead()
 	check.Ok(t, err)
 	check.Equals(t, 10, len(tagsForHead))
@@ -73,8 +71,7 @@ func TestTagsForHeadForMultipleCommits(t *testing.T) {
 	createCommit(fs, "New Version", "Hello world 2")
 	createVersionTag(fs, "app-0.0.2")
 
-	repo, err := NewRepo(fs)
-	check.Ok(t, err)
+	repo := newTestRepo(fs)
 	tagsForHead, err := repo.TagsForHead()
 	check.Ok(t, err)
 	check.Equals(t, 1, len(tagsForHead))
@@ -86,8 +83,7 @@ func TestTagsForHeadWhenNone(t *testing.T) {
 	fs := memfs.New()
 	createGitRepo(fs)
 
-	repo, err := NewRepo(fs)
-	check.Ok(t, err)
+	repo := newTestRepo(fs)
 	tagsForHead, err := repo.TagsForHead()
 	check.Ok(t, err)
 	check.Equals(t, 0, len(tagsForHead))
@@ -98,8 +94,7 @@ func TestTagsForModule(t *testing.T) {
 	createGitRepo(fs)
 	createVersionTag(fs, "app-0.0.1")
 
-	repo, err := NewRepo(fs)
-	check.Ok(t, err)
+	repo := newTestRepo(fs)
 	tagsForModule, err := repo.TagsForModule("app")
 	check.Ok(t, err)
 	check.Equals(t, 1, len(tagsForModule))
@@ -113,8 +108,7 @@ func TestTagsForModuleForMultipleCommitsAndTags(t *testing.T) {
 	createCommit(fs, "New Version", "Hello world 2")
 	createVersionTag(fs, "app-0.0.2")
 
-	repo, err := NewRepo(fs)
-	check.Ok(t, err)
+	repo := newTestRepo(fs)
 	tagsForModule, err := repo.TagsForModule("app")
 	check.Ok(t, err)
 	check.Equals(t, 2, len(tagsForModule))
@@ -133,8 +127,7 @@ func TestTagsForModuleIsSorted(t *testing.T) {
 		expectedTags = append(expectedTags, tag)
 	}
 
-	repo, err := NewRepo(fs)
-	check.Ok(t, err)
+	repo := newTestRepo(fs)
 	tagsForModule, err := repo.TagsForModule("app")
 	check.Ok(t, err)
 	check.Equals(t, 10, len(tagsForModule))
@@ -145,8 +138,7 @@ func TestTagsForModuleWhenNone(t *testing.T) {
 	fs := memfs.New()
 	createGitRepo(fs)
 
-	repo, err := NewRepo(fs)
-	check.Ok(t, err)
+	repo := newTestRepo(fs)
 	tagsForModule, err := repo.TagsForModule("app")
 	check.Ok(t, err)
 	check.Equals(t, 0, len(tagsForModule))
@@ -157,8 +149,7 @@ func TestTagsForModuleWhenOnlyPromoted(t *testing.T) {
 	createGitRepo(fs)
 	createVersionTag(fs, "app-0.0.1-promoted")
 
-	repo, err := NewRepo(fs)
-	check.Ok(t, err)
+	repo := newTestRepo(fs)
 	tagsForModule, err := repo.TagsForModule("app")
 	check.Ok(t, err)
 	check.Equals(t, 0, len(tagsForModule))
@@ -169,8 +160,7 @@ func TestTagsForModuleWhenPartialModuleNameMatch(t *testing.T) {
 	createGitRepo(fs)
 	createVersionTag(fs, "ap-0.0.1")
 
-	repo, err := NewRepo(fs)
-	check.Ok(t, err)
+	repo := newTestRepo(fs)
 	tagsForModule, err := repo.TagsForModule("app")
 	check.Ok(t, err)
 	check.Equals(t, 0, len(tagsForModule))
@@ -181,8 +171,7 @@ func TestTagsForModuleWhenIncorrectVersioning(t *testing.T) {
 	createGitRepo(fs)
 	createVersionTag(fs, "app-.0.1")
 
-	repo, err := NewRepo(fs)
-	check.Ok(t, err)
+	repo := newTestRepo(fs)
 	tagsForModule, err := repo.TagsForModule("app")
 	check.Ok(t, err)
 	check.Equals(t, 0, len(tagsForModule))
@@ -194,8 +183,7 @@ func TestTagsForModule_stage(t *testing.T) {
 	createVersionTag(fs, "app-0.0.1")
 	createVersionTag(fs, "app-0.0.1-promoted")
 
-	repo, err := NewRepo(fs)
-	check.Ok(t, err)
+	repo := newTestRepo(fs)
 	tagsForModule, err := repo.TagsForModule("app", "promoted")
 	check.Ok(t, err)
 	check.Equals(t, 1, len(tagsForModule))
@@ -211,8 +199,7 @@ func TestTagsForModuleForMultipleCommitsAndTags_stage(t *testing.T) {
 	createVersionTag(fs, "app-0.0.2")
 	createVersionTag(fs, "app-0.0.2-promoted")
 
-	repo, err := NewRepo(fs)
-	check.Ok(t, err)
+	repo := newTestRepo(fs)
 	tagsForModule, err := repo.TagsForModule("app", "promoted")
 	check.Ok(t, err)
 	check.Equals(t, 2, len(tagsForModule))
@@ -231,8 +218,7 @@ func TestTagsForModuleIsSorted_stage(t *testing.T) {
 		expectedTags = append(expectedTags, tag)
 	}
 
-	repo, err := NewRepo(fs)
-	check.Ok(t, err)
+	repo := newTestRepo(fs)
 	tagsForModule, err := repo.TagsForModule("app", "promoted")
 	check.Ok(t, err)
 	check.Equals(t, 10, len(tagsForModule))
@@ -243,8 +229,7 @@ func TestTagsForModuleWhenNone_stage(t *testing.T) {
 	fs := memfs.New()
 	createGitRepo(fs)
 
-	repo, err := NewRepo(fs)
-	check.Ok(t, err)
+	repo := newTestRepo(fs)
 	tagsForModule, err := repo.TagsForModule("app", "promoted")
 	check.Ok(t, err)
 	check.Equals(t, 0, len(tagsForModule))
@@ -255,8 +240,7 @@ func TestTagsForModuleOnlyUnpromoted_stage(t *testing.T) {
 	createGitRepo(fs)
 	createVersionTag(fs, "app-0.0.1")
 
-	repo, err := NewRepo(fs)
-	check.Ok(t, err)
+	repo := newTestRepo(fs)
 	tagsForModule, err := repo.TagsForModule("app", "promoted")
 	check.Ok(t, err)
 	check.Equals(t, 0, len(tagsForModule))
@@ -267,8 +251,7 @@ func TestTagsForModulePartialModuleNameMatch_stage(t *testing.T) {
 	createGitRepo(fs)
 	createVersionTag(fs, "ap-0.0.1-promoted")
 
-	repo, err := NewRepo(fs)
-	check.Ok(t, err)
+	repo := newTestRepo(fs)
 	tagsForModule, err := repo.TagsForModule("app", "promoted")
 	check.Ok(t, err)
 	check.Equals(t, 0, len(tagsForModule))
@@ -279,8 +262,7 @@ func TestTagsForModuleIncorrectVersioning_stage(t *testing.T) {
 	createGitRepo(fs)
 	createVersionTag(fs, "app-.0.1-promoted")
 
-	repo, err := NewRepo(fs)
-	check.Ok(t, err)
+	repo := newTestRepo(fs)
 	tagsForModule, err := repo.TagsForModule("app", "promoted")
 	check.Ok(t, err)
 	check.Equals(t, 0, len(tagsForModule))

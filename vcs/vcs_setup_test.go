@@ -7,8 +7,19 @@ import (
 	"github.com/go-git/go-git/v5/plumbing/cache"
 	"github.com/go-git/go-git/v5/plumbing/object"
 	filesystem2 "github.com/go-git/go-git/v5/storage/filesystem"
+	"github.com/sirupsen/logrus"
 	"time"
 )
+
+// newTestRepo is a test version of NewRepo which creates an in memory repository
+func newTestRepo(fs billy.Filesystem) *Repo {
+	gr, err := git.Open(filesystem2.NewStorage(fs, cache.NewObjectLRUDefault()), fs)
+	if err != nil {
+		panic(err)
+	}
+	return &Repo{gitRepo: gr, log: logrus.New()}
+
+}
 
 func createGitRepo(fs billy.Filesystem) {
 	_, _ = git.Init(filesystem2.NewStorage(fs, cache.NewObjectLRUDefault()), fs)

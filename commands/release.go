@@ -28,7 +28,7 @@ func addRelease(topLevel *cobra.Command, app *options.App) {
 
 func release(app *options.App) error {
 	logrus.Printf("Releasing %v", app.Name)
-	repo, err := vcs.NewRepo(nil)
+	repo, err := vcs.NewRepo()
 	if err != nil {
 		return err
 	}

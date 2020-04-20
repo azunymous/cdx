@@ -1,11 +1,8 @@
 package vcs
 
 import (
-	"github.com/go-git/go-billy/v5"
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing"
-	"github.com/go-git/go-git/v5/plumbing/cache"
-	filesystem2 "github.com/go-git/go-git/v5/storage/filesystem"
 	"github.com/sirupsen/logrus"
 	"regexp"
 	"sort"
@@ -17,16 +14,9 @@ type Repo struct {
 	log     logrus.StdLogger
 }
 
-// NewRepo returns a new repository from the given filesystem
-func NewRepo(fs billy.Filesystem) (*Repo, error) {
-	var gr *git.Repository
-	var err error
-	// This is currently done for testing. TODO remove non plain open
-	if fs == nil {
-		gr, err = git.PlainOpenWithOptions(".", &git.PlainOpenOptions{DetectDotGit: true})
-	} else {
-		gr, err = git.Open(filesystem2.NewStorage(fs, cache.NewObjectLRUDefault()), fs)
-	}
+// NewRepo returns a new repository, search recursively upwards for a git repository
+func NewRepo() (*Repo, error) {
+	gr, err := git.PlainOpenWithOptions(".", &git.PlainOpenOptions{DetectDotGit: true})
 
 	if err != nil {
 		return nil, err
