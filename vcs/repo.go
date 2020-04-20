@@ -24,8 +24,8 @@ func NewRepo() (*Repo, error) {
 	return &Repo{gitRepo: gr, log: logrus.New()}, nil
 }
 
-// TagsForHead returns sorted all tags at HEAD
-func (r *Repo) TagsForHead() ([]string, error) {
+// TagsForHead returns sorted version tags at HEAD
+func (r *Repo) TagsForHead(module string) ([]string, error) {
 	current, err := r.gitRepo.ResolveRevision("HEAD")
 	if err != nil {
 		return nil, err
@@ -35,9 +35,14 @@ func (r *Repo) TagsForHead() ([]string, error) {
 		return nil, err
 	}
 
+	regex, err := regexp.Compile("^" + module + "-[0-9]+\\.[0-9]+\\.[0-9]+$")
+	if err != nil {
+		return nil, err
+	}
+
 	var t []string
 	_ = tags.ForEach(func(reference *plumbing.Reference) error {
-		if reference.Hash() == *current {
+		if reference.Hash() == *current && regex.MatchString(reference.Name().Short()) {
 			t = append(t, reference.Name().Short())
 		}
 		return nil

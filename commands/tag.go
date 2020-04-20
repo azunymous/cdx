@@ -29,6 +29,7 @@ your git repository
 	topLevel.AddCommand(tagCmd)
 
 	addRelease(tagCmd, appOpts)
+	addPromote(tagCmd, appOpts)
 }
 
 func tag(cmd *cobra.Command, args []string, appOpts *options.App) error {

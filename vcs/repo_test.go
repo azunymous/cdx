@@ -27,7 +27,7 @@ func TestTagsForHead(t *testing.T) {
 	createVersionTag(fs, "app-0.0.1")
 
 	repo := newTestRepo(fs)
-	tagsForHead, err := repo.TagsForHead()
+	tagsForHead, err := repo.TagsForHead("app")
 	check.Ok(t, err)
 	check.Equals(t, 1, len(tagsForHead))
 	check.Equals(t, []string{"app-0.0.1"}, tagsForHead)
@@ -36,14 +36,14 @@ func TestTagsForHead(t *testing.T) {
 func TestTagsForHeadForMultipleTags(t *testing.T) {
 	fs := memfs.New()
 	createGitRepo(fs)
-	createVersionTag(fs, "app-0.0.1-alpha")
+	createVersionTag(fs, "app-0.0.2")
 	createVersionTag(fs, "app-0.0.1")
 
 	repo := newTestRepo(fs)
-	tagsForHead, err := repo.TagsForHead()
+	tagsForHead, err := repo.TagsForHead("app")
 	check.Ok(t, err)
 	check.Equals(t, 2, len(tagsForHead))
-	check.Equals(t, []string{"app-0.0.1", "app-0.0.1-alpha"}, tagsForHead)
+	check.Equals(t, []string{"app-0.0.1", "app-0.0.2"}, tagsForHead)
 }
 
 func TestTagsForHeadAreSorted(t *testing.T) {
@@ -58,7 +58,7 @@ func TestTagsForHeadAreSorted(t *testing.T) {
 	}
 
 	repo := newTestRepo(fs)
-	tagsForHead, err := repo.TagsForHead()
+	tagsForHead, err := repo.TagsForHead("app")
 	check.Ok(t, err)
 	check.Equals(t, 10, len(tagsForHead))
 	check.Equals(t, expectedTags, tagsForHead)
@@ -72,7 +72,7 @@ func TestTagsForHeadForMultipleCommits(t *testing.T) {
 	createVersionTag(fs, "app-0.0.2")
 
 	repo := newTestRepo(fs)
-	tagsForHead, err := repo.TagsForHead()
+	tagsForHead, err := repo.TagsForHead("app")
 	check.Ok(t, err)
 	check.Equals(t, 1, len(tagsForHead))
 
@@ -84,7 +84,40 @@ func TestTagsForHeadWhenNone(t *testing.T) {
 	createGitRepo(fs)
 
 	repo := newTestRepo(fs)
-	tagsForHead, err := repo.TagsForHead()
+	tagsForHead, err := repo.TagsForHead("app")
+	check.Ok(t, err)
+	check.Equals(t, 0, len(tagsForHead))
+}
+
+func TestTagsForHeadWhenPartialModuleNameMatch(t *testing.T) {
+	fs := memfs.New()
+	createGitRepo(fs)
+	createVersionTag(fs, "ap-0.0.1")
+
+	repo := newTestRepo(fs)
+	tagsForHead, err := repo.TagsForHead("app")
+	check.Ok(t, err)
+	check.Equals(t, 0, len(tagsForHead))
+}
+
+func TestTagsForHeadWhenIncorrectVersioning(t *testing.T) {
+	fs := memfs.New()
+	createGitRepo(fs)
+	createVersionTag(fs, "app-.0.1")
+
+	repo := newTestRepo(fs)
+	tagsForHead, err := repo.TagsForHead("app")
+	check.Ok(t, err)
+	check.Equals(t, 0, len(tagsForHead))
+}
+
+func TestTagsForHeadWhenOnlyPromoted(t *testing.T) {
+	fs := memfs.New()
+	createGitRepo(fs)
+	createVersionTag(fs, "app-0.0.1-promoted")
+
+	repo := newTestRepo(fs)
+	tagsForHead, err := repo.TagsForHead("app")
 	check.Ok(t, err)
 	check.Equals(t, 0, len(tagsForHead))
 }
