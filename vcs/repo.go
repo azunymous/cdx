@@ -25,7 +25,12 @@ func NewRepo() (*Repo, error) {
 }
 
 // TagsForHead returns sorted version tags at HEAD
-func (r *Repo) TagsForHead(module string) ([]string, error) {
+func (r *Repo) TagsForHead(module string, stage ...string) ([]string, error) {
+	suffix := ""
+	if len(stage) > 0 {
+		suffix = "-" + stage[0]
+	}
+
 	current, err := r.gitRepo.ResolveRevision("HEAD")
 	if err != nil {
 		return nil, err
@@ -35,7 +40,7 @@ func (r *Repo) TagsForHead(module string) ([]string, error) {
 		return nil, err
 	}
 
-	regex, err := regexp.Compile("^" + module + "-[0-9]+\\.[0-9]+\\.[0-9]+$")
+	regex, err := regexp.Compile("^" + module + "-[0-9]+\\.[0-9]+\\.[0-9]+" + suffix + "$")
 	if err != nil {
 		return nil, err
 	}

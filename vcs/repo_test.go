@@ -122,6 +122,96 @@ func TestTagsForHeadWhenOnlyPromoted(t *testing.T) {
 	check.Equals(t, 0, len(tagsForHead))
 }
 
+func TestTagsForHead_stage(t *testing.T) {
+	fs := memfs.New()
+	createGitRepo(fs)
+	createVersionTag(fs, "app-0.0.1")
+	createVersionTag(fs, "app-0.0.1-promoted")
+
+	repo := newTestRepo(fs)
+	tagsForHead, err := repo.TagsForHead("app", "promoted")
+	check.Ok(t, err)
+	check.Equals(t, 1, len(tagsForHead))
+	check.Equals(t, []string{"app-0.0.1-promoted"}, tagsForHead)
+}
+
+func TestTagsForHeadForMultipleCommits_stage(t *testing.T) {
+	fs := memfs.New()
+	createGitRepo(fs)
+	createVersionTag(fs, "app-0.0.1")
+	createVersionTag(fs, "app-0.0.1-promoted")
+	createCommit(fs, "New Version", "Hello world 2")
+	createVersionTag(fs, "app-0.0.2")
+	createVersionTag(fs, "app-0.0.2-promoted")
+
+	repo := newTestRepo(fs)
+	tagsForHead, err := repo.TagsForHead("app", "promoted")
+	check.Ok(t, err)
+	check.Equals(t, 1, len(tagsForHead))
+	check.Equals(t, []string{"app-0.0.2-promoted"}, tagsForHead)
+}
+
+func TestTagsForHeadAreSorted_stage(t *testing.T) {
+	fs := memfs.New()
+	createGitRepo(fs)
+	var expectedTags []string
+	for i := 0; i < 10; i++ {
+		is := strconv.Itoa(i)
+		tag := "app-0.0." + is + "-promoted"
+		createVersionTag(fs, tag)
+		expectedTags = append(expectedTags, tag)
+	}
+
+	repo := newTestRepo(fs)
+	tagsForHead, err := repo.TagsForHead("app", "promoted")
+	check.Ok(t, err)
+	check.Equals(t, 10, len(tagsForHead))
+	check.Equals(t, expectedTags, tagsForHead)
+}
+
+func TestTagsForHeadWhenNone_stage(t *testing.T) {
+	fs := memfs.New()
+	createGitRepo(fs)
+
+	repo := newTestRepo(fs)
+	tagsForHead, err := repo.TagsForHead("app", "promoted")
+	check.Ok(t, err)
+	check.Equals(t, 0, len(tagsForHead))
+}
+
+func TestTagsForHeadWhenOnlyUnpromoted_stage(t *testing.T) {
+	fs := memfs.New()
+	createGitRepo(fs)
+	createVersionTag(fs, "app-0.0.1")
+
+	repo := newTestRepo(fs)
+	tagsForHead, err := repo.TagsForHead("app", "promoted")
+	check.Ok(t, err)
+	check.Equals(t, 0, len(tagsForHead))
+}
+
+func TestTagsForHeadWhenPartialMatch_stage(t *testing.T) {
+	fs := memfs.New()
+	createGitRepo(fs)
+	createVersionTag(fs, "ap-0.0.1")
+
+	repo := newTestRepo(fs)
+	tagsForHead, err := repo.TagsForHead("app", "promoted")
+	check.Ok(t, err)
+	check.Equals(t, 0, len(tagsForHead))
+}
+
+func TestTagsForHeadWhenIncorrectVersioning_stage(t *testing.T) {
+	fs := memfs.New()
+	createGitRepo(fs)
+	createVersionTag(fs, "app-.0.1")
+
+	repo := newTestRepo(fs)
+	tagsForHead, err := repo.TagsForHead("app", "promoted")
+	check.Ok(t, err)
+	check.Equals(t, 0, len(tagsForHead))
+}
+
 func TestTagsForModule(t *testing.T) {
 	fs := memfs.New()
 	createGitRepo(fs)

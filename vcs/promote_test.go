@@ -31,6 +31,21 @@ func TestPromoteTagSucceedsIfAlreadyPromoted(t *testing.T) {
 	check.Ok(t, err)
 }
 
+func TestPromoteSecondCommit(t *testing.T) {
+	fs := memfs.New()
+	createGitRepo(fs)
+	createVersionTag(fs, "app-0.1.0")
+	createVersionTag(fs, "app-0.1.0-promoted")
+	createCommit(fs, "New Version", "Hello world 2")
+	createVersionTag(fs, "app-0.2.0")
+
+	repo := newTestRepo(fs)
+	err := repo.Promote("app", "promoted")
+	check.Ok(t, err)
+	err = tagExistsAtHead(fs, "app-0.2.0-promoted")
+	check.Ok(t, err)
+}
+
 func TestPromoteFailsWhenNoBaseTag(t *testing.T) {
 	fs := memfs.New()
 	createGitRepo(fs)

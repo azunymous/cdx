@@ -20,6 +20,16 @@ const (
 
 // Increment increases the version number tag for a module and creates the new tag.
 func (r *Repo) IncrementTag(module string, field Field) error {
+	tagsForHead, err := r.TagsForHead(module)
+	if err != nil {
+		return err
+	}
+
+	if len(tagsForHead) > 0 {
+		r.log.Printf("HEAD already tagged with %s, continuing", tagsForHead[0])
+		return nil
+	}
+
 	tagsForModule, err := r.TagsForModule(module)
 	if err != nil {
 		return err

@@ -65,3 +65,13 @@ func tagExistsAtHead(fs billy.Filesystem, tag string) error {
 	}
 	return nil
 }
+
+func tagDoesNotExist(fs billy.Filesystem, tag string) error {
+	r, _ := git.Open(filesystem2.NewStorage(fs, cache.NewObjectLRUDefault()), fs)
+	_, err := r.Tag(tag)
+	if err == git.ErrTagNotFound {
+		return nil
+	} else {
+		return errors.New("tag exists")
+	}
+}

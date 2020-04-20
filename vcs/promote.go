@@ -6,7 +6,7 @@ import (
 )
 
 func (r *Repo) Promote(module, stage string) error {
-	tagsForModule, err := r.TagsForModule(module, stage)
+	tagsForModule, err := r.TagsForHead(module, stage)
 	if err != nil {
 		return err
 	}
