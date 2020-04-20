@@ -25,7 +25,7 @@ func NewRepo(fs billy.Filesystem) (*Repo, error) {
 }
 
 // TagsForHead returns all tags at HEAD
-func (r *Repo) TagsForHead() (map[string]struct{}, error) {
+func (r *Repo) TagsForHead() ([]string, error) {
 	current, err := r.gitRepo.ResolveRevision("HEAD")
 	if err != nil {
 		return nil, err
@@ -35,13 +35,14 @@ func (r *Repo) TagsForHead() (map[string]struct{}, error) {
 		return nil, err
 	}
 
-	t := map[string]struct{}{}
+	var t []string
 	_ = tags.ForEach(func(reference *plumbing.Reference) error {
 		if reference.Hash() == *current {
-			t[reference.Name().Short()] = struct{}{}
+			t = append(t, reference.Name().Short())
 		}
 		return nil
 	})
+	sort.Strings(t)
 	return t, nil
 }
 

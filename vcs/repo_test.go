@@ -35,9 +35,7 @@ func TestTagsForHead(t *testing.T) {
 	tagsForHead, err := repo.TagsForHead()
 	check.Ok(t, err)
 	check.Equals(t, 1, len(tagsForHead))
-
-	_, ok := tagsForHead["app-0.0.1"]
-	check.Assert(t, ok, "Expected 'app-0.0.1' in map")
+	check.Equals(t, []string{"app-0.0.1"}, tagsForHead)
 }
 
 func TestTagsForHeadForMultipleTags(t *testing.T) {
@@ -51,7 +49,26 @@ func TestTagsForHeadForMultipleTags(t *testing.T) {
 	tagsForHead, err := repo.TagsForHead()
 	check.Ok(t, err)
 	check.Equals(t, 2, len(tagsForHead))
-	check.Equals(t, map[string]struct{}{"app-0.0.1-alpha": {}, "app-0.0.1": {}}, tagsForHead)
+	check.Equals(t, []string{"app-0.0.1", "app-0.0.1-alpha"}, tagsForHead)
+}
+
+func TestTagsForHeadAreSorted(t *testing.T) {
+	fs := memfs.New()
+	createGitRepo(fs)
+	var expectedTags []string
+	for i := 0; i < 10; i++ {
+		is := strconv.Itoa(i)
+		tag := "app-0.0." + is
+		createVersionTag(fs, tag)
+		expectedTags = append(expectedTags, tag)
+	}
+
+	repo, err := NewRepo(fs)
+	check.Ok(t, err)
+	tagsForHead, err := repo.TagsForHead()
+	check.Ok(t, err)
+	check.Equals(t, 10, len(tagsForHead))
+	check.Equals(t, expectedTags, tagsForHead)
 }
 
 func TestTagsForHeadForMultipleCommits(t *testing.T) {
@@ -67,8 +84,7 @@ func TestTagsForHeadForMultipleCommits(t *testing.T) {
 	check.Ok(t, err)
 	check.Equals(t, 1, len(tagsForHead))
 
-	_, ok := tagsForHead["app-0.0.2"]
-	check.Assert(t, ok, "Expected 'app-0.0.2' in map")
+	check.Equals(t, []string{"app-0.0.2"}, tagsForHead)
 }
 
 func TestTagsForHeadWhenNone(t *testing.T) {
