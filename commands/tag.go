@@ -1,7 +1,7 @@
 package commands
 
 import (
-	"cd/commands/options"
+	"cdx/commands/options"
 	"github.com/spf13/cobra"
 	"log"
 )
@@ -28,7 +28,7 @@ your git repository
 	options.AddNameArg(tagCmd, appOpts)
 	topLevel.AddCommand(tagCmd)
 
-	addRelease(tagCmd)
+	addRelease(tagCmd, appOpts)
 }
 
 func tag(cmd *cobra.Command, args []string, appOpts *options.App) error {

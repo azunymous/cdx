@@ -1,7 +1,7 @@
 package main
 
 import (
-	"cd/commands"
+	"cdx/commands"
 	"fmt"
 	"github.com/spf13/cobra"
 	"os"
