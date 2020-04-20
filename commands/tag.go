@@ -2,8 +2,8 @@ package commands
 
 import (
 	"cdx/commands/options"
+	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
-	"log"
 )
 
 // addTag adds the primary tag command to a top level command.
@@ -19,7 +19,7 @@ your git repository
 		Run: func(cmd *cobra.Command, args []string) {
 			err := tag(cmd, args, appOpts)
 			if err != nil {
-				log.Fatal(err)
+				logrus.Fatal(err)
 			}
 		},
 		Args: cobra.NoArgs,

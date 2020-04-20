@@ -2,8 +2,9 @@ package commands
 
 import (
 	"cdx/commands/options"
+	"cdx/vcs"
+	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
-	"log"
 )
 
 // addRelease adds the increment command to a top level command.
@@ -15,9 +16,9 @@ func addRelease(topLevel *cobra.Command, app *options.App) {
 		Long: `The release command increments the version via a git tag
 `,
 		Run: func(cmd *cobra.Command, args []string) {
-			err := release(args, app)
+			err := release(app)
 			if err != nil {
-				log.Fatal(err)
+				logrus.Fatal(err)
 			}
 		},
 	}
@@ -25,7 +26,11 @@ func addRelease(topLevel *cobra.Command, app *options.App) {
 	topLevel.AddCommand(releaseCmd)
 }
 
-func release(args []string, app *options.App) error {
-	log.Printf("Releasing %v", app.Name)
-	return nil
+func release(app *options.App) error {
+	logrus.Printf("Releasing %v", app.Name)
+	repo, err := vcs.NewRepo(nil)
+	if err != nil {
+		return err
+	}
+	return repo.IncrementTag(app.Name, vcs.Minor)
 }
