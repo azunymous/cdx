@@ -5,4 +5,4 @@ PROJECT_DIR="${SCRIPT_DIR}/../"
 
 cd ${PROJECT_DIR}
 
-go test ./test/... --tags=e2e
+go test ./test/... --tags=e2e --count=1

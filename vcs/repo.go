@@ -1,3 +1,4 @@
+// Package vcs interacts with git and git tags
 package vcs
 
 import (
@@ -25,9 +26,11 @@ func NewRepo() (*Repo, error) {
 }
 
 // TagsForHead returns sorted version tags at HEAD
+// If no promotion stage is provided, only unpromoted tags are returned.
+// Only the first provided promotion stage is used for filtering.
 func (r *Repo) TagsForHead(module string, stage ...string) ([]string, error) {
 	suffix := ""
-	if len(stage) > 0 {
+	if len(stage) > 0 && stage[0] != "" {
 		suffix = "-" + stage[0]
 	}
 
@@ -61,7 +64,7 @@ func (r *Repo) TagsForHead(module string, stage ...string) ([]string, error) {
 // Only the first provided promotion stage is used for filtering.
 func (r *Repo) TagsForModule(module string, stage ...string) ([]string, error) {
 	suffix := ""
-	if len(stage) > 0 {
+	if len(stage) > 0 && stage[0] != "" {
 		suffix = "-" + stage[0]
 	}
 

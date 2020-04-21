@@ -58,7 +58,7 @@ func (r *Repo) IncrementTag(module string, field Field) error {
 // increase takes a semver tag (see version regex) and bumps the given field returning the incremented X.Y.Z
 // Note: this can take a semver tag string with a module but only returns the semantic version.
 func increase(latest string, field Field) (string, error) {
-	v := version.FindString(latest)
+	v := VersionFrom(latest)
 	if v == "" {
 		return "", fmt.Errorf("could not find version in tag: %s", latest)
 	}
@@ -76,4 +76,9 @@ func increase(latest string, field Field) (string, error) {
 		split[Minor] = "0"
 	}
 	return strings.Join(split, "."), nil
+}
+
+// VersionFrom returns the semantic version (X.Y.Z) from a tag, returning an empty string if not found.
+func VersionFrom(tag string) string {
+	return version.FindString(tag)
 }
