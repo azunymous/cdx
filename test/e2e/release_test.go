@@ -96,6 +96,59 @@ func TestReleaseTagsRepositoryAndPushesTags(t *testing.T) {
 	check.Equals(t, "app-0.1.0", strings.TrimSpace(string(output)))
 }
 
+func TestReleaseDoesNotTagNonOriginMasterWithPushFlag(t *testing.T) {
+	dir := createTempGitDir()
+	rd := createTempGitRemote(dir)
+	createTag(dir, "app-0.1.0")
+	_ = exec.Command("git", "checkout", "-b", "test-branch").Run()
+
+	createCommit(dir, "Commit 2")
+	command := exec.Command("cdx", "tag", "release", "-n", "app", "--push")
+	err := command.Run()
+	check.Ok(t, err)
+	output, err := exec.Command("git", "tag", "--points-at", "HEAD").CombinedOutput()
+	check.Ok(t, err)
+	check.Equals(t, "", strings.TrimSpace(string(output)))
+
+	_ = os.Chdir(rd)
+	output, err = exec.Command("git", "tag", "--points-at", "HEAD").CombinedOutput()
+	check.Ok(t, err)
+	check.Equals(t, "", strings.TrimSpace(string(output)))
+}
+
+func TestReleaseTagsDoesNotFailIfAlreadyTaggedLocallyWithPushFlag(t *testing.T) {
+	dir := createTempGitDir()
+	rd := createTempGitRemote(dir)
+	createTag(dir, "app-0.1.0")
+	createCommit(dir, "Commit 2")
+	_ = exec.Command("git", "checkout", "HEAD~1", "--detach").Run()
+
+	command := exec.Command("cdx", "tag", "release", "-n", "app", "--push")
+	err := command.Run()
+	check.Ok(t, err)
+	output, err := exec.Command("git", "tag", "--points-at", "HEAD").CombinedOutput()
+	check.Ok(t, err)
+	check.Equals(t, "app-0.1.0", strings.TrimSpace(string(output)))
+
+	_ = os.Chdir(rd)
+	output, err = exec.Command("git", "tag", "--points-at", "HEAD").CombinedOutput()
+	check.Ok(t, err)
+	check.Equals(t, "app-0.1.0", strings.TrimSpace(string(output)))
+}
+
+func TestReleaseWithPushFlagFailsWhenNoRemote(t *testing.T) {
+	dir := createTempGitDir()
+	createTag(dir, "app-0.1.0")
+	createCommit(dir, "Commit 2")
+
+	command := exec.Command("cdx", "tag", "release", "-n", "app", "--push")
+	err := command.Run()
+	check.Assert(t, err != nil, "expecting error to not be nil, got %v", err)
+	output, err := exec.Command("git", "tag", "--points-at", "HEAD").CombinedOutput()
+	check.Ok(t, err)
+	check.Equals(t, "", strings.TrimSpace(string(output)))
+}
+
 func TestReleaseTagsRepositoryAndPushesAllTags(t *testing.T) {
 	fn := createTempGitDir()
 	createTag(fn, "app-0.1.0")
@@ -154,4 +207,27 @@ func TestReleaseTagsRepositoryAndPushesTags_detachedHeadAndNonHeadTags(t *testin
 	output, err = exec.Command("git", "tag", "--points-at", "HEAD~1").CombinedOutput()
 	check.Ok(t, err)
 	check.Equals(t, "app-0.2.0", strings.TrimSpace(string(output)))
+}
+
+func TestReleaseTagsRepositoryAndPushesTags_detachedHead_FailsWhenNotOnOriginMaster(t *testing.T) {
+	fn := createTempGitDir()
+	rd := createTempGitRemote(fn)
+	createTag(fn, "app-0.1.0")
+	createCommit(fn, "commit 2")
+	_ = exec.Command("git", "push", "origin", "master").Run()
+
+	createCommit(fn, "commit 3")
+	_ = exec.Command("git", "checkout", "HEAD", "--detach").Run()
+
+	command := exec.Command("cdx", "tag", "release", "-n", "app", "--push")
+	err := command.Run()
+	check.Ok(t, err)
+	_ = exec.Command("git", "checkout", "master").Run()
+	output, err := exec.Command("git", "tag", "--points-at", "HEAD").CombinedOutput()
+	check.Equals(t, "", strings.TrimSpace(string(output)))
+	check.Ok(t, err)
+	_ = os.Chdir(rd)
+	output, err = exec.Command("git", "tag", "--points-at", "HEAD").CombinedOutput()
+	check.Ok(t, err)
+	check.Equals(t, "", strings.TrimSpace(string(output)))
 }

@@ -34,6 +34,10 @@ func release(app *options.App, incr *options.Increment, git *options.Git) error 
 	if err != nil {
 		return err
 	}
+	if git.Push && !repo.OnMaster() {
+		logrus.Println("Not on origin/master, continuing")
+		return nil
+	}
 	err = repo.IncrementTag(app.Name, incr.GetField())
 	if err != nil {
 		return err
