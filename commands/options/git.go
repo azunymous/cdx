@@ -11,7 +11,7 @@ type Git struct {
 }
 
 func AddPushArg(cmd *cobra.Command, g *Git) {
-	cmd.Flags().BoolVarP(&g.Push, "push", "p", false, "Push tags")
+	cmd.Flags().BoolVarP(&g.Push, "push", "p", false, "Push tags (must be on origin/master)")
 }
 
 func AddHeadOnlyArg(cmd *cobra.Command, g *Git) {
