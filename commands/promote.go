@@ -9,27 +9,36 @@ import (
 
 // addRelease adds the increment command to a top level command.
 func addPromote(topLevel *cobra.Command, app *options.App) {
+	gitOpts := &options.Git{}
 	releaseCmd := &cobra.Command{
 		Use:   "promote <stage>",
 		Short: "Promote this commit",
 		Long: `The promote command promotes the current commit via a git tag
 `,
 		Run: func(cmd *cobra.Command, args []string) {
-			err := promote(app, args[0])
+			err := promote(app, gitOpts, args[0])
 			if err != nil {
 				logrus.Fatal(err)
 			}
 		},
 		Args: cobra.ExactArgs(1),
 	}
+	options.AddPushArg(releaseCmd, gitOpts)
 	topLevel.AddCommand(releaseCmd)
 }
 
-func promote(app *options.App, stage string) error {
-	logrus.Printf("Releasing %v", app.Name)
+func promote(app *options.App, git *options.Git, stage string) error {
+	logrus.Printf("Promoting %s to %s", app.Name, stage)
 	repo, err := vcs.NewRepo()
 	if err != nil {
 		return err
 	}
-	return repo.Promote(app.Name, stage)
+	err = repo.Promote(app.Name, stage)
+	if err != nil {
+		return err
+	}
+	if git.Push {
+		return repo.PushTags()
+	}
+	return nil
 }
