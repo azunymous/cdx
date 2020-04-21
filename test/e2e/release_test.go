@@ -18,6 +18,29 @@ func TestReleaseOpensRepository(t *testing.T) {
 }
 
 func TestReleaseTagsRepository(t *testing.T) {
+	dir := createTempGitDir()
+	createTag(dir, "app-0.1.0")
+	createCommit(dir, "Commit 2")
+	command := exec.Command("cdx", "tag", "release", "-n", "app")
+	err := command.Run()
+	check.Ok(t, err)
+	output, err := exec.Command("git", "tag", "--points-at", "HEAD").CombinedOutput()
+	check.Ok(t, err)
+	check.Equals(t, "app-0.2.0", strings.TrimSpace(string(output)))
+}
+
+func TestReleaseTagsRepositoryAlreadyReleased(t *testing.T) {
+	dir := createTempGitDir()
+	createTag(dir, "app-0.1.0")
+	command := exec.Command("cdx", "tag", "release", "-n", "app")
+	err := command.Run()
+	check.Ok(t, err)
+	output, err := exec.Command("git", "tag", "--points-at", "HEAD").CombinedOutput()
+	check.Ok(t, err)
+	check.Equals(t, "app-0.1.0", strings.TrimSpace(string(output)))
+}
+
+func TestReleaseTagsRepositoryFirstRelease(t *testing.T) {
 	createTempGitDir()
 	command := exec.Command("cdx", "tag", "release", "-n", "app")
 	err := command.Run()
