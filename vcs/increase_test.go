@@ -1,11 +1,14 @@
 package vcs
 
-import "testing"
+import (
+	"cdx/versioned"
+	"testing"
+)
 
 func Test_increase(t *testing.T) {
 	type args struct {
 		latest string
-		field  Field
+		field  versioned.Field
 	}
 	tests := []struct {
 		name    string
@@ -17,7 +20,7 @@ func Test_increase(t *testing.T) {
 			name: "increases patch",
 			args: args{
 				latest: "0.0.0",
-				field:  Patch,
+				field:  versioned.Patch,
 			},
 			want:    "0.0.1",
 			wantErr: false,
@@ -26,7 +29,7 @@ func Test_increase(t *testing.T) {
 			name: "increases minor",
 			args: args{
 				latest: "0.0.0",
-				field:  Minor,
+				field:  versioned.Minor,
 			},
 			want:    "0.1.0",
 			wantErr: false,
@@ -35,7 +38,7 @@ func Test_increase(t *testing.T) {
 			name: "increases major",
 			args: args{
 				latest: "0.0.0",
-				field:  Major,
+				field:  versioned.Major,
 			},
 			want:    "1.0.0",
 			wantErr: false,
@@ -45,7 +48,7 @@ func Test_increase(t *testing.T) {
 			name: "increases patch 2",
 			args: args{
 				latest: "0.0.1",
-				field:  Patch,
+				field:  versioned.Patch,
 			},
 			want:    "0.0.2",
 			wantErr: false,
@@ -54,7 +57,7 @@ func Test_increase(t *testing.T) {
 			name: "increases minor 2",
 			args: args{
 				latest: "0.1.0",
-				field:  Minor,
+				field:  versioned.Minor,
 			},
 			want:    "0.2.0",
 			wantErr: false,
@@ -63,7 +66,7 @@ func Test_increase(t *testing.T) {
 			name: "increases major 2",
 			args: args{
 				latest: "1.0.0",
-				field:  Major,
+				field:  versioned.Major,
 			},
 			want:    "2.0.0",
 			wantErr: false,
@@ -73,7 +76,7 @@ func Test_increase(t *testing.T) {
 			name: "increases patch",
 			args: args{
 				latest: "0.0.0",
-				field:  Patch,
+				field:  versioned.Patch,
 			},
 			want:    "0.0.1",
 			wantErr: false,
@@ -82,7 +85,7 @@ func Test_increase(t *testing.T) {
 			name: "increases minor",
 			args: args{
 				latest: "0.0.0",
-				field:  Minor,
+				field:  versioned.Minor,
 			},
 			want:    "0.1.0",
 			wantErr: false,
@@ -91,7 +94,7 @@ func Test_increase(t *testing.T) {
 			name: "increases major",
 			args: args{
 				latest: "0.0.0",
-				field:  Major,
+				field:  versioned.Major,
 			},
 			want:    "1.0.0",
 			wantErr: false,
@@ -101,7 +104,7 @@ func Test_increase(t *testing.T) {
 			name: "resets patch count minor",
 			args: args{
 				latest: "0.1.1",
-				field:  Minor,
+				field:  versioned.Minor,
 			},
 			want:    "0.2.0",
 			wantErr: false,
@@ -110,7 +113,7 @@ func Test_increase(t *testing.T) {
 			name: "resets patch count major",
 			args: args{
 				latest: "1.0.1",
-				field:  Major,
+				field:  versioned.Major,
 			},
 			want:    "2.0.0",
 			wantErr: false,
@@ -119,7 +122,7 @@ func Test_increase(t *testing.T) {
 			name: "resets minor count major",
 			args: args{
 				latest: "1.1.0",
-				field:  Major,
+				field:  versioned.Major,
 			},
 			want:    "2.0.0",
 			wantErr: false,
@@ -128,7 +131,7 @@ func Test_increase(t *testing.T) {
 			name: "resets all count major",
 			args: args{
 				latest: "1.1.1",
-				field:  Major,
+				field:  versioned.Major,
 			},
 			want:    "2.0.0",
 			wantErr: false,

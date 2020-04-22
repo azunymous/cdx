@@ -2,6 +2,7 @@ package vcs
 
 import (
 	"cdx/test/check"
+	"cdx/versioned"
 	"github.com/go-git/go-billy/v5/memfs"
 	"testing"
 )
@@ -13,7 +14,7 @@ func TestIncrementTag(t *testing.T) {
 	createCommit(fs, "New Version", "Hello world 2")
 
 	repo := newTestRepo(fs)
-	err := repo.IncrementTag("app", Minor)
+	err := repo.IncrementTag("app", versioned.Minor)
 	check.Ok(t, err)
 	err = tagExistsAtHead(fs, "app-0.2.0")
 	check.Ok(t, err)
@@ -25,7 +26,7 @@ func TestIncrementTagAlreadyExists(t *testing.T) {
 	createVersionTag(fs, "app-0.1.0")
 
 	repo := newTestRepo(fs)
-	err := repo.IncrementTag("app", Minor)
+	err := repo.IncrementTag("app", versioned.Minor)
 	check.Ok(t, err)
 	err = tagExistsAtHead(fs, "app-0.1.0")
 	check.Ok(t, err)
@@ -40,7 +41,7 @@ func TestIncrementTagDifferentField(t *testing.T) {
 	createCommit(fs, "New Version", "Hello world 2")
 
 	repo := newTestRepo(fs)
-	err := repo.IncrementTag("app", Major)
+	err := repo.IncrementTag("app", versioned.Major)
 	check.Ok(t, err)
 	err = tagExistsAtHead(fs, "app-2.0.0")
 	check.Ok(t, err)
@@ -51,7 +52,7 @@ func TestIncrementTagCreatesNewTagWhenNoTagsExist(t *testing.T) {
 	createGitRepo(fs)
 
 	repo := newTestRepo(fs)
-	err := repo.IncrementTag("app", Minor)
+	err := repo.IncrementTag("app", versioned.Minor)
 	check.Ok(t, err)
 	err = tagExistsAtHead(fs, "app-0.1.0")
 	check.Ok(t, err)

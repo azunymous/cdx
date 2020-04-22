@@ -1,7 +1,7 @@
 package options
 
 import (
-	"cdx/vcs"
+	"cdx/versioned"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"strings"
@@ -16,15 +16,15 @@ func AddIncrementArg(cmd *cobra.Command, r *Increment) {
 	cmd.Flags().StringVarP(&r.Field, "increment", "i", "minor", "Semantic version field to increment")
 }
 
-func (i *Increment) GetField() vcs.Field {
+func (i *Increment) GetField() versioned.Field {
 	i.Field = strings.ToLower(i.Field)
 	switch i.Field {
 	case "patch":
-		return vcs.Patch
+		return versioned.Patch
 	case "minor":
-		return vcs.Minor
+		return versioned.Minor
 	case "major":
-		return vcs.Major
+		return versioned.Major
 	}
 	logrus.Fatalln("Increment field was not one of [major, minor, patch]")
 	return -1

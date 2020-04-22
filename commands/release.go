@@ -3,6 +3,7 @@ package commands
 import (
 	"cdx/commands/options"
 	"cdx/vcs"
+	"cdx/vcs/git"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
@@ -28,22 +29,18 @@ func addRelease(topLevel *cobra.Command, app *options.App) {
 	topLevel.AddCommand(releaseCmd)
 }
 
-func release(app *options.App, incr *options.Increment, git *options.Git) error {
+func release(app *options.App, incr *options.Increment, gitOpts *options.Git) error {
 	logrus.Printf("Releasing %v", app.Name)
-	repo, err := vcs.NewRepo()
+	v, err := git.New(app.Name, incr.GetField(), gitOpts.Push, func() (git.Repository, error) { return vcs.NewRepo() })
 	if err != nil {
 		return err
 	}
-	if git.Push && !repo.OnMaster() {
-		logrus.Println("Not on origin/master, continuing")
+	if !v.Ready() {
 		return nil
 	}
-	err = repo.IncrementTag(app.Name, incr.GetField())
+	err = v.Release()
 	if err != nil {
 		return err
 	}
-	if git.Push {
-		return repo.PushTags()
-	}
-	return nil
+	return v.Distribute()
 }

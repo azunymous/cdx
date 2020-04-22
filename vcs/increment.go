@@ -1,6 +1,7 @@
 package vcs
 
 import (
+	"cdx/versioned"
 	"fmt"
 	"regexp"
 	"strconv"
@@ -9,17 +10,8 @@ import (
 
 var version = regexp.MustCompile(`[0-9]+\.[0-9]+\.[0-9]+`)
 
-// Semantic version field - X.Y.Z
-type Field int32
-
-const (
-	Major Field = 0 // X
-	Minor Field = 1 // Y
-	Patch Field = 2 // Z
-)
-
 // Increment increases the version number tag for a module and creates the new tag.
-func (r *Repo) IncrementTag(module string, field Field) error {
+func (r *Repo) IncrementTag(module string, field versioned.Field) error {
 	tagsForHead, err := r.TagsForHead(module)
 	if err != nil {
 		return err
@@ -57,7 +49,7 @@ func (r *Repo) IncrementTag(module string, field Field) error {
 
 // increase takes a semver tag (see version regex) and bumps the given field returning the incremented X.Y.Z
 // Note: this can take a semver tag string with a module but only returns the semantic version.
-func increase(latest string, field Field) (string, error) {
+func increase(latest string, field versioned.Field) (string, error) {
 	v := VersionFrom(latest)
 	if v == "" {
 		return "", fmt.Errorf("could not find version in tag: %s", latest)
@@ -69,11 +61,11 @@ func increase(latest string, field Field) (string, error) {
 		return "", err
 	}
 	split[field] = strconv.Itoa(num + 1)
-	if field < Patch {
-		split[Patch] = "0"
+	if field < versioned.Patch {
+		split[versioned.Patch] = "0"
 	}
-	if field < Minor {
-		split[Minor] = "0"
+	if field < versioned.Minor {
+		split[versioned.Minor] = "0"
 	}
 	return strings.Join(split, "."), nil
 }
