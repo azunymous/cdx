@@ -3,19 +3,19 @@ package commands
 import (
 	"cdx/commands/options"
 	"cdx/vcs"
+	"errors"
 	"fmt"
-	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
 
-// addLatest adds the increment command to a top level command.
+// addLatest adds the latest command to a top level command.
 func addLatest(topLevel *cobra.Command, app *options.App) {
 	gitOpts := &options.Git{}
 	latestCmd := &cobra.Command{
 		Use:   "latest [promotion stage]",
 		Short: "Get the latest version of an application",
-		Long: `The latest command fetches the latest version of an application from the git tags. 
+		Long: `The latest command fetches the latest version of an application from git tags. 
 If a stage is specified, the latest version promoted to that stage is returned.
 `,
 		Run: func(cmd *cobra.Command, args []string) {
@@ -52,7 +52,7 @@ func getHeadTags(repo *vcs.Repo, app *options.App, stage string) error {
 		return err
 	}
 	if len(tagsForHead) == 0 {
-		return errors.New("No tags found at HEAD")
+		return errors.New("no tags found at HEAD")
 	}
 	fmt.Println(vcs.VersionFrom(tagsForHead[len(tagsForHead)-1]))
 	return nil
@@ -64,7 +64,7 @@ func getModuleTags(repo *vcs.Repo, app *options.App, stage string) error {
 		return err
 	}
 	if len(tagsForModule) == 0 {
-		return errors.New("No tags found for module and stage")
+		return errors.New("no tags found for module and stage")
 	}
 	fmt.Println(vcs.VersionFrom(tagsForModule[len(tagsForModule)-1]))
 	return nil
