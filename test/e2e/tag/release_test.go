@@ -1,9 +1,9 @@
 //+build e2e
 
-package e2e
+package tag
 
 import (
-	"cdx/internal/check"
+	"cdx/test/check"
 	"os"
 	"os/exec"
 	"strings"

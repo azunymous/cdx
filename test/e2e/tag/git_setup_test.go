@@ -1,6 +1,6 @@
 //+build e2e
 
-package e2e
+package tag
 
 import (
 	"io/ioutil"

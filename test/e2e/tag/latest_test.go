@@ -1,10 +1,10 @@
 //+build e2e
 
-package e2e
+package tag
 
 import (
 	"bytes"
-	"cdx/internal/check"
+	"cdx/test/check"
 	"os/exec"
 	"testing"
 )
