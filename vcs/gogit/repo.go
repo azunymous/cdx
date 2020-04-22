@@ -1,5 +1,5 @@
 // Package vcs interacts with git and git tags
-package vcs
+package gogit
 
 import (
 	"github.com/go-git/go-git/v5"

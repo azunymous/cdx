@@ -1,4 +1,4 @@
-package git
+package vcs
 
 import (
 	"cdx/versioned"
@@ -54,7 +54,7 @@ func TestNewGit(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := New(tt.args.app, tt.args.field, tt.args.push, tt.args.r)
+			got, err := NewGit(tt.args.app, tt.args.field, tt.args.push, tt.args.r)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("NewGit() error = %v, wantErr %v", err, tt.wantErr)
 				return

@@ -3,7 +3,7 @@ package commands
 import (
 	"cdx/commands/options"
 	"cdx/vcs"
-	"cdx/vcs/git"
+	"cdx/vcs/gogit"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
@@ -31,7 +31,7 @@ func addRelease(topLevel *cobra.Command, app *options.App) {
 
 func release(app *options.App, incr *options.Increment, gitOpts *options.Git) error {
 	logrus.Printf("Releasing %v", app.Name)
-	v, err := git.New(app.Name, incr.GetField(), gitOpts.Push, func() (git.Repository, error) { return vcs.NewRepo() })
+	v, err := vcs.NewGit(app.Name, incr.GetField(), gitOpts.Push, func() (vcs.Repository, error) { return gogit.NewRepo() })
 	if err != nil {
 		return err
 	}

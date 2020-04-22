@@ -1,7 +1,7 @@
-package git
+package vcs
 
 import (
-	"cdx/vcs"
+	"cdx/vcs/gogit"
 	"cdx/versioned"
 	"errors"
 	"github.com/sirupsen/logrus"
@@ -26,7 +26,7 @@ type Repository interface {
 
 type repoF func() (Repository, error)
 
-func New(app string, field versioned.Field, push bool, r repoF) (*Git, error) {
+func NewGit(app string, field versioned.Field, push bool, r repoF) (*Git, error) {
 	repo, err := r()
 	if err != nil {
 		return nil, err
@@ -77,7 +77,7 @@ func (g *Git) getHeadTag(stage string) (string, error) {
 	if len(tagsForHead) == 0 {
 		return "", errors.New("no tags found at HEAD")
 	}
-	return vcs.VersionFrom(tagsForHead[len(tagsForHead)-1]), nil
+	return gogit.VersionFrom(tagsForHead[len(tagsForHead)-1]), nil
 }
 
 func (g *Git) getModuleTag(stage string) (string, error) {
@@ -88,5 +88,5 @@ func (g *Git) getModuleTag(stage string) (string, error) {
 	if len(tagsForModule) == 0 {
 		return "", errors.New("no tags found for module and stage")
 	}
-	return vcs.VersionFrom(tagsForModule[len(tagsForModule)-1]), nil
+	return gogit.VersionFrom(tagsForModule[len(tagsForModule)-1]), nil
 }

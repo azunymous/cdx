@@ -3,7 +3,7 @@ package commands
 import (
 	"cdx/commands/options"
 	"cdx/vcs"
-	"cdx/vcs/git"
+	"cdx/vcs/gogit"
 	"fmt"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
@@ -36,7 +36,7 @@ func latest(args []string, app *options.App, gitOpts *options.Git) error {
 	if len(args) > 0 {
 		stage = args[0]
 	}
-	v, err := git.New(app.Name, -1, false, func() (git.Repository, error) { return vcs.NewRepo() })
+	v, err := vcs.NewGit(app.Name, -1, false, func() (vcs.Repository, error) { return gogit.NewRepo() })
 	if err != nil {
 		return err
 	}
