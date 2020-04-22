@@ -161,7 +161,7 @@ func TestGit_Release(t *testing.T) {
 			fields: fields{
 				app:   "app",
 				field: 1,
-				r:     &FakeGitRepo{incrementTagErr: errors.New("something went wrong")},
+				r:     &FakeGitRepo{passedErr: errors.New("something went wrong")},
 				push:  false,
 			},
 			wantErr: true,
@@ -216,7 +216,7 @@ func TestGit_Promote(t *testing.T) {
 			fields: fields{
 				app:   "app",
 				field: 1,
-				r:     &FakeGitRepo{promoteErr: errors.New("something went wrong")},
+				r:     &FakeGitRepo{passedErr: errors.New("something went wrong")},
 				push:  false,
 			},
 			stage:   "stage",
@@ -232,7 +232,7 @@ func TestGit_Promote(t *testing.T) {
 				push:  tt.fields.push,
 			}
 			err := g.Promote(tt.stage)
-			if app, stage := g.r.(*FakeGitRepo).passedPromote(); app != tt.fields.app || stage != tt.stage {
+			if app, stage := g.r.(*FakeGitRepo).passedStringString(); app != tt.fields.app || stage != tt.stage {
 				t.Errorf("Release() passed in: %s & %v, want %s & %v", tt.fields.app, tt.stage, app, stage)
 			}
 
@@ -315,6 +315,136 @@ func TestGit_Distribute(t *testing.T) {
 			}
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Distribute() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
+
+// module fake func returns = 1.1.1, while head fake func returns = 0.0.0
+func TestGit_Version(t *testing.T) {
+	type fields struct {
+		app   string
+		field versioned.Field
+		r     Repository
+		push  bool
+	}
+	type args struct {
+		stage    string
+		headOnly bool
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		want    string
+		wantErr bool
+	}{
+		{
+			name: "returns version tag of module",
+			fields: fields{
+				app:   "app",
+				field: 1,
+				r:     &FakeGitRepo{},
+				push:  false,
+			},
+			args: args{
+				stage:    "stage",
+				headOnly: false,
+			},
+			want:    "1.1.1",
+			wantErr: false,
+		},
+		{
+			name: "returns verison tag of head with head arg",
+			fields: fields{
+				app:   "app",
+				field: 1,
+				r:     &FakeGitRepo{},
+				push:  false,
+			},
+			args: args{
+				stage:    "stage",
+				headOnly: true,
+			},
+			want:    "0.0.0",
+			wantErr: false,
+		},
+		{
+			name: "passes through tagsforhead error when headOnly",
+			fields: fields{
+				app:   "app",
+				field: 1,
+				r:     &FakeGitRepo{passedHeadErr: errors.New("error")},
+				push:  false,
+			},
+			args: args{
+				stage:    "stage",
+				headOnly: true,
+			},
+			want:    "",
+			wantErr: true,
+		},
+		{
+			name: "passes through tagsformodule error when not headOnly",
+			fields: fields{
+				app:   "app",
+				field: 1,
+				r:     &FakeGitRepo{passedModuleErr: errors.New("error")},
+				push:  false,
+			},
+			args: args{
+				stage:    "stage",
+				headOnly: false,
+			},
+			want:    "",
+			wantErr: true,
+		},
+		{
+			name: "errors when no tags when headOnly",
+			fields: fields{
+				app:   "app",
+				field: 1,
+				r:     &FakeGitRepo{emptyHeadTags: true},
+				push:  false,
+			},
+			args: args{
+				stage:    "stage",
+				headOnly: true,
+			},
+			want:    "",
+			wantErr: true,
+		},
+		{
+			name: "errors when no tags when not headOnly",
+			fields: fields{
+				app:   "app",
+				field: 1,
+				r:     &FakeGitRepo{emptyModuleTags: true},
+				push:  false,
+			},
+			args: args{
+				stage:    "stage",
+				headOnly: false,
+			},
+			want:    "",
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			g := &Git{
+				app:   tt.fields.app,
+				field: tt.fields.field,
+				r:     tt.fields.r,
+				push:  tt.fields.push,
+			}
+			got, err := g.Version(tt.args.stage, tt.args.headOnly)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Version() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if got != tt.want {
+				t.Errorf("Version() got = %v, want %v", got, tt.want)
 			}
 		})
 	}
