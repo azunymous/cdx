@@ -3,6 +3,7 @@ package commands
 import (
 	"cdx/commands/options"
 	"cdx/vcs"
+	"cdx/vcs/git"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
@@ -27,18 +28,15 @@ func addPromote(topLevel *cobra.Command, app *options.App) {
 	topLevel.AddCommand(releaseCmd)
 }
 
-func promote(app *options.App, git *options.Git, stage string) error {
+func promote(app *options.App, gitOpts *options.Git, stage string) error {
 	logrus.Printf("Promoting %s to %s", app.Name, stage)
-	repo, err := vcs.NewRepo()
+	v, err := git.New(app.Name, -1, gitOpts.Push, func() (git.Repository, error) { return vcs.NewRepo() })
 	if err != nil {
 		return err
 	}
-	err = repo.Promote(app.Name, stage)
+	err = v.Promote(stage)
 	if err != nil {
 		return err
 	}
-	if git.Push {
-		return repo.PushTags()
-	}
-	return nil
+	return v.Distribute()
 }

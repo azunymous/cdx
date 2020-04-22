@@ -187,6 +187,62 @@ func TestGit_Release(t *testing.T) {
 	}
 }
 
+func TestGit_Promote(t *testing.T) {
+	type fields struct {
+		app   string
+		field versioned.Field
+		r     Repository
+		push  bool
+	}
+	tests := []struct {
+		name    string
+		stage   string
+		fields  fields
+		wantErr bool
+	}{
+		{
+			name: "promote passes through fields to promote",
+			fields: fields{
+				app:   "app",
+				field: 1,
+				r:     &FakeGitRepo{},
+				push:  false,
+			},
+			stage:   "stage",
+			wantErr: false,
+		},
+		{
+			name: "promote passes through repo Promote error",
+			fields: fields{
+				app:   "app",
+				field: 1,
+				r:     &FakeGitRepo{promoteErr: errors.New("something went wrong")},
+				push:  false,
+			},
+			stage:   "stage",
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			g := &Git{
+				app:   tt.fields.app,
+				field: tt.fields.field,
+				r:     tt.fields.r,
+				push:  tt.fields.push,
+			}
+			err := g.Promote(tt.stage)
+			if app, stage := g.r.(*FakeGitRepo).passedPromote(); app != tt.fields.app || stage != tt.stage {
+				t.Errorf("Release() passed in: %s & %v, want %s & %v", tt.fields.app, tt.stage, app, stage)
+			}
+
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Release() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
+
 func TestGit_Distribute(t *testing.T) {
 	type fields struct {
 		app   string

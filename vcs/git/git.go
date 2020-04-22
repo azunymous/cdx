@@ -16,6 +16,7 @@ type Git struct {
 type Repository interface {
 	OnMaster() bool
 	IncrementTag(name string, field versioned.Field) error
+	Promote(app, stage string) error
 	PushTags() error
 }
 
@@ -47,7 +48,7 @@ func (g *Git) Release() error {
 }
 
 func (g *Git) Promote(stage string) error {
-	panic("implement me")
+	return g.r.Promote(g.app, stage)
 }
 
 func (g *Git) Version(stage string, headOnly bool) (string, error) {
