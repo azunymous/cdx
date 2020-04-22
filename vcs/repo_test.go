@@ -33,6 +33,18 @@ func TestTagsForHead(t *testing.T) {
 	check.Equals(t, []string{"app-0.0.1"}, tagsForHead)
 }
 
+func TestTagsForHead_emptyStage(t *testing.T) {
+	fs := memfs.New()
+	createGitRepo(fs)
+	createVersionTag(fs, "app-0.0.1")
+
+	repo := newTestRepo(fs)
+	tagsForHead, err := repo.TagsForHead("app", "")
+	check.Ok(t, err)
+	check.Equals(t, 1, len(tagsForHead))
+	check.Equals(t, []string{"app-0.0.1"}, tagsForHead)
+}
+
 func TestTagsForHeadForMultipleTags(t *testing.T) {
 	fs := memfs.New()
 	createGitRepo(fs)
@@ -219,6 +231,18 @@ func TestTagsForModule(t *testing.T) {
 
 	repo := newTestRepo(fs)
 	tagsForModule, err := repo.TagsForModule("app")
+	check.Ok(t, err)
+	check.Equals(t, 1, len(tagsForModule))
+	check.Equals(t, []string{"app-0.0.1"}, tagsForModule)
+}
+
+func TestTagsForModule_emptyStage(t *testing.T) {
+	fs := memfs.New()
+	createGitRepo(fs)
+	createVersionTag(fs, "app-0.0.1")
+
+	repo := newTestRepo(fs)
+	tagsForModule, err := repo.TagsForModule("app", "")
 	check.Ok(t, err)
 	check.Equals(t, 1, len(tagsForModule))
 	check.Equals(t, []string{"app-0.0.1"}, tagsForModule)
