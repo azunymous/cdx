@@ -1,4 +1,4 @@
-// Package vcs interacts with git and git tags
+// Package gogit interacts with git and git tags via the gogit git implementation
 package gogit
 
 import (
