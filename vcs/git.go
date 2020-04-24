@@ -1,7 +1,7 @@
 package vcs
 
 import (
-	"cdx/vcs/gogit"
+	"cdx/parse"
 	"cdx/versioned"
 	"errors"
 	"github.com/sirupsen/logrus"
@@ -77,7 +77,7 @@ func (g *Git) getHeadTag(stage string) (string, error) {
 	if len(tagsForHead) == 0 {
 		return "", errors.New("no tags found at HEAD")
 	}
-	return gogit.VersionFrom(tagsForHead[len(tagsForHead)-1]), nil
+	return parse.Version(tagsForHead[len(tagsForHead)-1]), nil
 }
 
 func (g *Git) getModuleTag(stage string) (string, error) {
@@ -88,5 +88,5 @@ func (g *Git) getModuleTag(stage string) (string, error) {
 	if len(tagsForModule) == 0 {
 		return "", errors.New("no tags found for module and stage")
 	}
-	return gogit.VersionFrom(tagsForModule[len(tagsForModule)-1]), nil
+	return parse.Version(tagsForModule[len(tagsForModule)-1]), nil
 }

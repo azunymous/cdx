@@ -1,14 +1,12 @@
 package gogit
 
 import (
+	"cdx/parse"
 	"cdx/versioned"
 	"fmt"
-	"regexp"
 	"strconv"
 	"strings"
 )
-
-var version = regexp.MustCompile(`[0-9]+\.[0-9]+\.[0-9]+`)
 
 // Increment increases the version number tag for a module and creates the new tag.
 func (r *Repo) IncrementTag(module string, field versioned.Field) error {
@@ -50,7 +48,7 @@ func (r *Repo) IncrementTag(module string, field versioned.Field) error {
 // increase takes a semver tag (see version regex) and bumps the given field returning the incremented X.Y.Z
 // Note: this can take a semver tag string with a module but only returns the semantic version.
 func increase(latest string, field versioned.Field) (string, error) {
-	v := VersionFrom(latest)
+	v := parse.Version(latest)
 	if v == "" {
 		return "", fmt.Errorf("could not find version in tag: %s", latest)
 	}
@@ -68,9 +66,4 @@ func increase(latest string, field versioned.Field) (string, error) {
 		split[versioned.Minor] = "0"
 	}
 	return strings.Join(split, "."), nil
-}
-
-// VersionFrom returns the semantic version (X.Y.Z) from a tag, returning an empty string if not found.
-func VersionFrom(tag string) string {
-	return version.FindString(tag)
 }
