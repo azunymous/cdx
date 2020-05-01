@@ -1,8 +1,8 @@
 package vcs
 
 import (
-	"cdx/versioned"
 	"errors"
+	"github.com/azunymous/cdx/versioned"
 	"reflect"
 	"testing"
 )

@@ -1,10 +1,10 @@
 package commands
 
 import (
-	"cdx/commands/options"
-	"cdx/vcs"
-	"cdx/vcs/gogit"
 	"fmt"
+	"github.com/azunymous/cdx/commands/options"
+	"github.com/azunymous/cdx/vcs"
+	"github.com/azunymous/cdx/vcs/gogit"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )

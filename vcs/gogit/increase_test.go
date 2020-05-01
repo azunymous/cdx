@@ -1,7 +1,7 @@
 package gogit
 
 import (
-	"cdx/versioned"
+	"github.com/azunymous/cdx/versioned"
 	"testing"
 )
 

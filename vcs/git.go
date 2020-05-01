@@ -1,9 +1,9 @@
 package vcs
 
 import (
-	"cdx/parse"
-	"cdx/versioned"
 	"errors"
+	"github.com/azunymous/cdx/parse"
+	"github.com/azunymous/cdx/versioned"
 	"github.com/sirupsen/logrus"
 )
 

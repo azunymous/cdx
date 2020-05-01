@@ -3,7 +3,7 @@
 package tag
 
 import (
-	"cdx/test/check"
+	"github.com/azunymous/cdx/test/check"
 	"os/exec"
 	"testing"
 )

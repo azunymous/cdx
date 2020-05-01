@@ -4,7 +4,7 @@ package tag
 
 import (
 	"bytes"
-	"cdx/test/check"
+	"github.com/azunymous/cdx/test/check"
 	"os/exec"
 	"testing"
 )

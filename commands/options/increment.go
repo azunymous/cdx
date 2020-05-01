@@ -1,7 +1,7 @@
 package options
 
 import (
-	"cdx/versioned"
+	"github.com/azunymous/cdx/versioned"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"strings"

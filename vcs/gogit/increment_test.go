@@ -1,8 +1,8 @@
 package gogit
 
 import (
-	"cdx/test/check"
-	"cdx/versioned"
+	"github.com/azunymous/cdx/test/check"
+	"github.com/azunymous/cdx/versioned"
 	"github.com/go-git/go-billy/v5/memfs"
 	"testing"
 )

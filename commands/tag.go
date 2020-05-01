@@ -1,7 +1,7 @@
 package commands
 
 import (
-	"cdx/commands/options"
+	"github.com/azunymous/cdx/commands/options"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )

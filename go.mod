@@ -1,4 +1,4 @@
-module cdx
+module github.com/azunymous/cdx
 
 go 1.14
 

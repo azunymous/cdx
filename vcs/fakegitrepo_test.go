@@ -1,6 +1,6 @@
 package vcs
 
-import "cdx/versioned"
+import "github.com/azunymous/cdx/versioned"
 
 type FakeGitRepo struct {
 	isOnMaster         bool

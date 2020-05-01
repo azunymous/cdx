@@ -1,8 +1,8 @@
 package main
 
 import (
-	"cdx/commands"
 	"fmt"
+	"github.com/azunymous/cdx/commands"
 	"github.com/spf13/cobra"
 	"os"
 )

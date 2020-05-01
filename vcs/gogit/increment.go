@@ -1,9 +1,9 @@
 package gogit
 
 import (
-	"cdx/parse"
-	"cdx/versioned"
 	"fmt"
+	"github.com/azunymous/cdx/parse"
+	"github.com/azunymous/cdx/versioned"
 	"strconv"
 	"strings"
 )

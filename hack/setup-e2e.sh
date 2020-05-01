@@ -5,5 +5,6 @@ PROJECT_DIR="${SCRIPT_DIR}/../"
 
 cd ${PROJECT_DIR}
 
-echo "This installs cdx. The end to end tests assume cdx is on your \$PATH"
+echo "This installs cdx via go install ./cmd/cdx"
+echo "The end to end tests assume cdx is on your \$PATH"
 go install ./cmd/cdx/
