@@ -136,6 +136,27 @@ func TestReleaseTagsDoesNotFailIfAlreadyTaggedLocallyWithPushFlag(t *testing.T) 
 	check.Equals(t, "app-0.1.0", strings.TrimSpace(string(output)))
 }
 
+func TestReleaseTagsRepositoryDoesNotFailifAlreadyTaggedRemotelyWithPushFlag(t *testing.T) {
+	dir := createTempGitDir()
+	t.Log(dir)
+	createTag(dir, "app-0.1.0")
+	rd := createTempGitRemote(dir)
+	_, _ = exec.Command("git", "push", "--tags").CombinedOutput()
+	_ = exec.Command("git", "checkout", "HEAD", "--detach").Run()
+
+	command := exec.Command("cdx", "tag", "release", "-n", "app", "--push")
+	err := command.Run()
+	check.Ok(t, err)
+	output, err := exec.Command("git", "tag", "--points-at", "HEAD").CombinedOutput()
+	check.Ok(t, err)
+	check.Equals(t, "app-0.1.0", strings.TrimSpace(string(output)))
+
+	_ = os.Chdir(rd)
+	output, err = exec.Command("git", "tag", "--points-at", "HEAD").CombinedOutput()
+	check.Ok(t, err)
+	check.Equals(t, "app-0.1.0", strings.TrimSpace(string(output)))
+}
+
 func TestReleaseWithPushFlagFailsWhenNoRemote(t *testing.T) {
 	dir := createTempGitDir()
 	createTag(dir, "app-0.1.0")
