@@ -12,7 +12,7 @@ import (
 
 func TestReleaseOpensRepository(t *testing.T) {
 	createTempGitDir()
-	command := exec.Command("cdx", "tag", "release", "-n", "app")
+	command := exec.Command(cdxCmd, "tag", "release", "-n", "app")
 	err := command.Run()
 	check.Ok(t, err)
 }
@@ -21,7 +21,7 @@ func TestReleaseTagsRepository(t *testing.T) {
 	dir := createTempGitDir()
 	createTag(dir, "app-0.1.0")
 	createCommit(dir, "Commit 2")
-	command := exec.Command("cdx", "tag", "release", "-n", "app")
+	command := exec.Command(cdxCmd, "tag", "release", "-n", "app")
 	err := command.Run()
 	check.Ok(t, err)
 	output, err := exec.Command("git", "tag", "--points-at", "HEAD").CombinedOutput()
@@ -32,7 +32,7 @@ func TestReleaseTagsRepository(t *testing.T) {
 func TestReleaseTagsRepositoryAlreadyReleased(t *testing.T) {
 	dir := createTempGitDir()
 	createTag(dir, "app-0.1.0")
-	command := exec.Command("cdx", "tag", "release", "-n", "app")
+	command := exec.Command(cdxCmd, "tag", "release", "-n", "app")
 	err := command.Run()
 	check.Ok(t, err)
 	output, err := exec.Command("git", "tag", "--points-at", "HEAD").CombinedOutput()
@@ -42,7 +42,7 @@ func TestReleaseTagsRepositoryAlreadyReleased(t *testing.T) {
 
 func TestReleaseTagsRepositoryFirstRelease(t *testing.T) {
 	createTempGitDir()
-	command := exec.Command("cdx", "tag", "release", "-n", "app")
+	command := exec.Command(cdxCmd, "tag", "release", "-n", "app")
 	err := command.Run()
 	check.Ok(t, err)
 	output, err := exec.Command("git", "tag", "--points-at", "HEAD").CombinedOutput()
@@ -52,7 +52,7 @@ func TestReleaseTagsRepositoryFirstRelease(t *testing.T) {
 
 func TestReleaseTagsRepository_patch(t *testing.T) {
 	createTempGitDir()
-	command := exec.Command("cdx", "tag", "release", "-n", "app", "-i", "patch")
+	command := exec.Command(cdxCmd, "tag", "release", "-n", "app", "-i", "patch")
 	err := command.Run()
 	check.Ok(t, err)
 	output, err := exec.Command("git", "tag", "--points-at", "HEAD").CombinedOutput()
@@ -62,7 +62,7 @@ func TestReleaseTagsRepository_patch(t *testing.T) {
 
 func TestReleaseTagsRepository_minor(t *testing.T) {
 	createTempGitDir()
-	command := exec.Command("cdx", "tag", "release", "-n", "app", "-i", "minor")
+	command := exec.Command(cdxCmd, "tag", "release", "-n", "app", "-i", "minor")
 	err := command.Run()
 	check.Ok(t, err)
 	output, err := exec.Command("git", "tag", "--points-at", "HEAD").CombinedOutput()
@@ -72,7 +72,7 @@ func TestReleaseTagsRepository_minor(t *testing.T) {
 
 func TestReleaseTagsRepository_major(t *testing.T) {
 	createTempGitDir()
-	command := exec.Command("cdx", "tag", "release", "-n", "app", "-i", "major")
+	command := exec.Command(cdxCmd, "tag", "release", "-n", "app", "-i", "major")
 	err := command.Run()
 	check.Ok(t, err)
 	output, err := exec.Command("git", "tag", "--points-at", "HEAD").CombinedOutput()
@@ -84,7 +84,7 @@ func TestReleaseTagsRepositoryAndPushesTags(t *testing.T) {
 	fn := createTempGitDir()
 	rd := createTempGitRemote(fn)
 
-	command := exec.Command("cdx", "tag", "release", "-n", "app", "--push")
+	command := exec.Command(cdxCmd, "tag", "release", "-n", "app", "--push")
 	err := command.Run()
 	check.Ok(t, err)
 	output, err := exec.Command("git", "tag", "--points-at", "HEAD").CombinedOutput()
@@ -103,7 +103,7 @@ func TestReleaseDoesNotTagNonOriginMasterWithPushFlag(t *testing.T) {
 	_ = exec.Command("git", "checkout", "-b", "test-branch").Run()
 
 	createCommit(dir, "Commit 2")
-	command := exec.Command("cdx", "tag", "release", "-n", "app", "--push")
+	command := exec.Command(cdxCmd, "tag", "release", "-n", "app", "--push")
 	err := command.Run()
 	check.Ok(t, err)
 	output, err := exec.Command("git", "tag", "--points-at", "HEAD").CombinedOutput()
@@ -123,7 +123,7 @@ func TestReleaseTagsDoesNotFailIfAlreadyTaggedLocallyWithPushFlag(t *testing.T) 
 	createCommit(dir, "Commit 2")
 	_ = exec.Command("git", "checkout", "HEAD~1", "--detach").Run()
 
-	command := exec.Command("cdx", "tag", "release", "-n", "app", "--push")
+	command := exec.Command(cdxCmd, "tag", "release", "-n", "app", "--push")
 	err := command.Run()
 	check.Ok(t, err)
 	output, err := exec.Command("git", "tag", "--points-at", "HEAD").CombinedOutput()
@@ -138,13 +138,12 @@ func TestReleaseTagsDoesNotFailIfAlreadyTaggedLocallyWithPushFlag(t *testing.T) 
 
 func TestReleaseTagsRepositoryDoesNotFailifAlreadyTaggedRemotelyWithPushFlag(t *testing.T) {
 	dir := createTempGitDir()
-	t.Log(dir)
 	createTag(dir, "app-0.1.0")
 	rd := createTempGitRemote(dir)
 	_, _ = exec.Command("git", "push", "--tags").CombinedOutput()
 	_ = exec.Command("git", "checkout", "HEAD", "--detach").Run()
 
-	command := exec.Command("cdx", "tag", "release", "-n", "app", "--push")
+	command := exec.Command(cdxCmd, "tag", "release", "-n", "app", "--push")
 	err := command.Run()
 	check.Ok(t, err)
 	output, err := exec.Command("git", "tag", "--points-at", "HEAD").CombinedOutput()
@@ -162,7 +161,7 @@ func TestReleaseWithPushFlagFailsWhenNoRemote(t *testing.T) {
 	createTag(dir, "app-0.1.0")
 	createCommit(dir, "Commit 2")
 
-	command := exec.Command("cdx", "tag", "release", "-n", "app", "--push")
+	command := exec.Command(cdxCmd, "tag", "release", "-n", "app", "--push")
 	err := command.Run()
 	check.Assert(t, err != nil, "expecting error to not be nil, got %v", err)
 	output, err := exec.Command("git", "tag", "--points-at", "HEAD").CombinedOutput()
@@ -176,7 +175,7 @@ func TestReleaseTagsRepositoryAndPushesAllTags(t *testing.T) {
 	createCommit(fn, "commit 2")
 	rd := createTempGitRemote(fn)
 
-	command := exec.Command("cdx", "tag", "release", "-n", "app", "--push")
+	command := exec.Command(cdxCmd, "tag", "release", "-n", "app", "--push")
 	err := command.Run()
 	check.Ok(t, err)
 	output, err := exec.Command("git", "tag", "--points-at", "HEAD").CombinedOutput()
@@ -196,7 +195,7 @@ func TestReleaseTagsRepositoryAndPushesTags_detachedHead(t *testing.T) {
 	rd := createTempGitRemote(fn)
 	_ = exec.Command("git", "checkout", "master", "--detach").Run()
 
-	command := exec.Command("cdx", "tag", "release", "-n", "app", "--push")
+	command := exec.Command(cdxCmd, "tag", "release", "-n", "app", "--push")
 	err := command.Run()
 	check.Ok(t, err)
 	output, err := exec.Command("git", "tag", "--points-at", "HEAD").CombinedOutput()
@@ -217,7 +216,7 @@ func TestReleaseTagsRepositoryAndPushesTags_detachedHeadAndNonHeadTags(t *testin
 	_ = exec.Command("git", "push", "origin", "master").Run()
 	_ = exec.Command("git", "checkout", "HEAD~1", "--detach").Run()
 
-	command := exec.Command("cdx", "tag", "release", "-n", "app", "--push")
+	command := exec.Command(cdxCmd, "tag", "release", "-n", "app", "--push")
 	err := command.Run()
 	check.Ok(t, err)
 	_ = exec.Command("git", "checkout", "master").Run()
@@ -240,7 +239,7 @@ func TestReleaseTagsRepositoryAndPushesTags_detachedHead_FailsWhenNotOnOriginMas
 	createCommit(fn, "commit 3")
 	_ = exec.Command("git", "checkout", "HEAD", "--detach").Run()
 
-	command := exec.Command("cdx", "tag", "release", "-n", "app", "--push")
+	command := exec.Command(cdxCmd, "tag", "release", "-n", "app", "--push")
 	err := command.Run()
 	check.Ok(t, err)
 	_ = exec.Command("git", "checkout", "master").Run()

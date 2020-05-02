@@ -14,7 +14,7 @@ import (
 func TestPromoteOpensRepository(t *testing.T) {
 	dir := createTempGitDir()
 	createTag(dir, "app-0.1.0")
-	command := exec.Command("cdx", "tag", "promote", "-n", "app", "promoted")
+	command := exec.Command(cdxCmd, "tag", "promote", "-n", "app", "promoted")
 	err := command.Run()
 	check.Ok(t, err)
 }
@@ -22,7 +22,7 @@ func TestPromoteOpensRepository(t *testing.T) {
 func TestPromoteTagsRepository(t *testing.T) {
 	dir := createTempGitDir()
 	createTag(dir, "app-0.1.0")
-	command := exec.Command("cdx", "tag", "promote", "-n", "app", "promoted")
+	command := exec.Command(cdxCmd, "tag", "promote", "-n", "app", "promoted")
 	err := command.Run()
 	check.Ok(t, err)
 	output, err := exec.Command("git", "tag", "--points-at", "HEAD").CombinedOutput()
@@ -36,7 +36,7 @@ func TestPromoteTagsRepositoryAlreadyPromoted(t *testing.T) {
 	dir := createTempGitDir()
 	createTag(dir, "app-0.1.0")
 	createTag(dir, "app-0.1.0-promoted")
-	command := exec.Command("cdx", "tag", "promote", "-n", "app", "promoted")
+	command := exec.Command(cdxCmd, "tag", "promote", "-n", "app", "promoted")
 	err := command.Run()
 	check.Ok(t, err)
 	output, err := exec.Command("git", "tag", "--points-at", "HEAD").CombinedOutput()
@@ -51,7 +51,7 @@ func TestPromoteTagsRepositoryAndPushesTags(t *testing.T) {
 	createTag(dir, "app-0.1.0")
 	rd := createTempGitRemote(dir)
 
-	command := exec.Command("cdx", "tag", "promote", "-n", "app", "promoted", "--push")
+	command := exec.Command(cdxCmd, "tag", "promote", "-n", "app", "promoted", "--push")
 	err := command.Run()
 	check.Ok(t, err)
 	output, err := exec.Command("git", "tag", "--points-at", "HEAD").CombinedOutput()
@@ -74,7 +74,7 @@ func TestPromoteTagsRepositoryAndPushesTags_detachedHead(t *testing.T) {
 	rd := createTempGitRemote(dir)
 	_ = exec.Command("git", "checkout", "master", "--detach").Run()
 
-	command := exec.Command("cdx", "tag", "promote", "-n", "app", "promoted", "--push")
+	command := exec.Command(cdxCmd, "tag", "promote", "-n", "app", "promoted", "--push")
 	err := command.Run()
 	check.Ok(t, err)
 	output, err := exec.Command("git", "tag", "--points-at", "HEAD").CombinedOutput()
@@ -101,7 +101,7 @@ func TestPromoteTagsRepositoryAndPushesTags_detachedHeadAndNonHeadTags(t *testin
 	_ = exec.Command("git", "push", "origin", "master").Run()
 	_ = exec.Command("git", "checkout", "HEAD~1", "--detach").Run()
 
-	command := exec.Command("cdx", "tag", "promote", "-n", "app", "promoted", "--push")
+	command := exec.Command(cdxCmd, "tag", "promote", "-n", "app", "promoted", "--push")
 	err := command.Run()
 	check.Ok(t, err)
 	_ = exec.Command("git", "checkout", "master").Run()

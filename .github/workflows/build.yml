@@ -1,4 +1,4 @@
-name: Go
+name: Build
 
 on:
   push:
@@ -36,12 +36,9 @@ jobs:
 
     - name: Test
       run: go test -v ./...
-    
-    - name: Release
+
+    - name: Test E2E
       run: |
-        git config --global user.name 'azu-robot'
-        git config --global user.email 'azu-robot@users.noreply.github.com'
-        git remote set-url --push origin https://azunymous:$GITHUB_TOKEN@github.com/azunymous/cdx
-        ./cdx tag release -n cdx --push
-      env:
-       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        git config --global user.email "azu-robot@ghostintheshe.ll"
+        git config --global user.name "azu-robot"
+        CDX_CMD=$PWD/cdx ./hack/run-e2e.sh

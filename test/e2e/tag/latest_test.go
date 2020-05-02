@@ -11,7 +11,7 @@ import (
 
 func TestLatestOpensRepositoryWithNoTagsFails(t *testing.T) {
 	createTempGitDir()
-	command := exec.Command("cdx", "tag", "latest", "-n", "app")
+	command := exec.Command(cdxCmd, "tag", "latest", "-n", "app")
 	err := command.Run()
 	check.Assert(t, err != nil, "expecting error to not be nil, got %v", err)
 }
@@ -20,7 +20,7 @@ func TestLatestGetsTagsFromRepository(t *testing.T) {
 	dir := createTempGitDir()
 	createTag(dir, "app-0.1.0")
 
-	command := exec.Command("cdx", "tag", "latest", "-n", "app")
+	command := exec.Command(cdxCmd, "tag", "latest", "-n", "app")
 	var stdOut bytes.Buffer
 	var stdErr bytes.Buffer
 	command.Stdout = &stdOut
@@ -38,7 +38,7 @@ func TestLatestGetsTagsFromRepositoryForMultipleCommits(t *testing.T) {
 	createTag(dir, "app-0.2.0")
 	createCommit(dir, "commit 3")
 
-	command := exec.Command("cdx", "tag", "latest", "-n", "app")
+	command := exec.Command(cdxCmd, "tag", "latest", "-n", "app")
 	var stdOut bytes.Buffer
 	var stdErr bytes.Buffer
 	command.Stdout = &stdOut
@@ -56,7 +56,7 @@ func TestLatestGetsTagsFromRepositoryOnlyOnHead(t *testing.T) {
 	createTag(dir, "app-0.2.0")
 	_ = exec.Command("git", "checkout", "HEAD~1", "--detach").Run()
 
-	command := exec.Command("cdx", "tag", "latest", "-n", "app", "--head")
+	command := exec.Command(cdxCmd, "tag", "latest", "-n", "app", "--head")
 	var stdOut bytes.Buffer
 	var stdErr bytes.Buffer
 	command.Stdout = &stdOut
@@ -69,7 +69,7 @@ func TestLatestGetsTagsFromRepositoryOnlyOnHead(t *testing.T) {
 
 func TestLatestOpensRepositoryForStageWithNoTagsFails(t *testing.T) {
 	createTempGitDir()
-	command := exec.Command("cdx", "tag", "latest", "-n", "app", "promoted")
+	command := exec.Command(cdxCmd, "tag", "latest", "-n", "app", "promoted")
 	err := command.Run()
 	check.Assert(t, err != nil, "expecting error to not be nil, got %v", err)
 }
@@ -78,7 +78,7 @@ func TestLatestOpensRepositoryForStageWithNoStageTagsFails(t *testing.T) {
 	dir := createTempGitDir()
 	createTag(dir, "app-0.1.0")
 
-	command := exec.Command("cdx", "tag", "latest", "-n", "app", "promoted")
+	command := exec.Command(cdxCmd, "tag", "latest", "-n", "app", "promoted")
 	err := command.Run()
 	check.Assert(t, err != nil, "expecting error to not be nil, got %v", err)
 }
@@ -88,7 +88,7 @@ func TestLatestGetsTagsFromRepositoryForStage(t *testing.T) {
 	createTag(dir, "app-0.1.0")
 	createTag(dir, "app-0.1.0-promoted")
 
-	command := exec.Command("cdx", "tag", "latest", "-n", "app", "promoted")
+	command := exec.Command(cdxCmd, "tag", "latest", "-n", "app", "promoted")
 	var stdOut bytes.Buffer
 	var stdErr bytes.Buffer
 	command.Stdout = &stdOut
@@ -105,7 +105,7 @@ func TestLatestGetsTagsFromRepositoryForStageWhenHeadIsNotTagged(t *testing.T) {
 	createTag(dir, "app-0.1.0-promoted")
 	createCommit(dir, "commit 2")
 
-	command := exec.Command("cdx", "tag", "latest", "-n", "app", "promoted")
+	command := exec.Command(cdxCmd, "tag", "latest", "-n", "app", "promoted")
 	var stdOut bytes.Buffer
 	var stdErr bytes.Buffer
 	command.Stdout = &stdOut
@@ -125,7 +125,7 @@ func TestLatestGetsTagsFromRepositoryForStageForMultipleCommits(t *testing.T) {
 	createTag(dir, "app-0.2.0-promoted")
 	createCommit(dir, "commit 3")
 
-	command := exec.Command("cdx", "tag", "latest", "-n", "app", "promoted")
+	command := exec.Command(cdxCmd, "tag", "latest", "-n", "app", "promoted")
 	var stdOut bytes.Buffer
 	var stdErr bytes.Buffer
 	command.Stdout = &stdOut
@@ -145,7 +145,7 @@ func TestLatestGetsTagsFromRepositoryForStageForMultipleCommits_onlyPromoted(t *
 	createTag(dir, "app-0.2.0")
 	createCommit(dir, "commit 3")
 
-	command := exec.Command("cdx", "tag", "latest", "-n", "app", "promoted")
+	command := exec.Command(cdxCmd, "tag", "latest", "-n", "app", "promoted")
 	var stdOut bytes.Buffer
 	var stdErr bytes.Buffer
 	command.Stdout = &stdOut
@@ -165,7 +165,7 @@ func TestLatestGetsTagsFromRepositoryForStageOnlyOnHead(t *testing.T) {
 	createTag(dir, "app-0.2.0-promoted")
 	_ = exec.Command("git", "checkout", "HEAD~1", "--detach").Run()
 
-	command := exec.Command("cdx", "tag", "latest", "-n", "app", "promoted", "--head")
+	command := exec.Command(cdxCmd, "tag", "latest", "-n", "app", "promoted", "--head")
 	var stdOut bytes.Buffer
 	var stdErr bytes.Buffer
 	command.Stdout = &stdOut

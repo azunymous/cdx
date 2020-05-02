@@ -1,5 +1,7 @@
 # cdx - Continuous Deployment Tooling
 
+![Github Actions](https://github.com/azunymous/cdx/workflows/Build/badge.svg?branch=master)
+
 ## Useful utilities for continuous integration and deployment pipelines
 - Semantically versioning via Git tags
 - Promoting versions of applications or modules

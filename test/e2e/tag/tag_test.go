@@ -9,7 +9,7 @@ import (
 )
 
 func TestTagCommandExists(t *testing.T) {
-	command := exec.Command("cdx", "tag", "-n", "app")
+	command := exec.Command(cdxCmd, "tag", "-n", "app")
 	err := command.Run()
 	check.Ok(t, err)
 }
