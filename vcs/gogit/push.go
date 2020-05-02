@@ -27,9 +27,10 @@ func (r *Repo) PushTags() error {
 			&git.PushOptions{RefSpecs: []config.RefSpec{rs}, Auth: getAuth()})
 	}
 	logrus.Info("Pushing using git command")
-	cmd := exec.CommandContext(ctx, "git", "push", "--tags", "-q", "--porcelain")
+	cmd := exec.CommandContext(ctx, "git", "push", "--tags", "-q")
 
-	_, err := cmd.CombinedOutput()
+	out, err := cmd.CombinedOutput()
+	logrus.Info(string(out))
 	if err != nil {
 		return err
 	}
