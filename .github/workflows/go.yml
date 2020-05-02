@@ -44,4 +44,3 @@ jobs:
         ./cdx tag release -n cdx --push
       env:
        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
