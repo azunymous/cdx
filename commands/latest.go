@@ -28,6 +28,7 @@ If a stage is specified, the latest version promoted to that stage is returned.
 	}
 
 	options.AddHeadOnlyArg(latestCmd, gitOpts)
+	options.AddFallbackHashArg(latestCmd, gitOpts)
 	topLevel.AddCommand(latestCmd)
 }
 
@@ -40,7 +41,7 @@ func latest(args []string, app *options.App, gitOpts *options.Git) error {
 	if err != nil {
 		return err
 	}
-	version, err := v.Version(stage, gitOpts.HeadOnly)
+	version, err := v.Version(stage, gitOpts.HeadOnly, gitOpts.FallbackHash)
 	if err != nil {
 		return err
 	}

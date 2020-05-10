@@ -31,6 +31,21 @@ func TestLatestGetsTagsFromRepository(t *testing.T) {
 	check.Equals(t, "", stdErr.String())
 }
 
+func TestLatestGetsHashFromRepositoryWhenNoTagsAndHashFlagProvided(t *testing.T) {
+	_ = createTempGitDir()
+
+	command := exec.Command(cdxCmd, "tag", "latest", "-n", "app", "--head", "--fallback")
+	var stdOut bytes.Buffer
+	var stdErr bytes.Buffer
+	command.Stdout = &stdOut
+	command.Stderr = &stdErr
+	err := command.Run()
+	check.Ok(t, err)
+	expectedOutput, _ := exec.Command("git", "rev-parse", "HEAD").Output()
+	check.Equals(t, "", stdErr.String())
+	check.Equals(t, string(expectedOutput), stdOut.String())
+}
+
 func TestLatestGetsTagsFromRepositoryForMultipleCommits(t *testing.T) {
 	dir := createTempGitDir()
 	createTag(dir, "app-0.1.0")

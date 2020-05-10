@@ -331,6 +331,7 @@ func TestGit_Version(t *testing.T) {
 	type args struct {
 		stage    string
 		headOnly bool
+		useHash  bool
 	}
 	tests := []struct {
 		name    string
@@ -400,6 +401,38 @@ func TestGit_Version(t *testing.T) {
 			wantErr: true,
 		},
 		{
+			name: "returns hash when no tags found, head only and useHash is true",
+			fields: fields{
+				app:   "app",
+				field: 1,
+				r:     &FakeGitRepo{passedHeadErr: errNoTagsFoundAtHead},
+				push:  false,
+			},
+			args: args{
+				stage:    "",
+				headOnly: true,
+				useHash:  true,
+			},
+			want:    "hash",
+			wantErr: false,
+		},
+		{
+			name: "returns error when no tags found and not head only and useHash is true",
+			fields: fields{
+				app:   "app",
+				field: 1,
+				r:     &FakeGitRepo{passedHeadErr: errNoTagsFoundAtHead, passedModuleErr: errNoTagsFoundAtHead},
+				push:  false,
+			},
+			args: args{
+				stage:    "",
+				headOnly: false,
+				useHash:  true,
+			},
+			want:    "",
+			wantErr: true,
+		},
+		{
 			name: "errors when no tags when headOnly",
 			fields: fields{
 				app:   "app",
@@ -438,7 +471,7 @@ func TestGit_Version(t *testing.T) {
 				r:     tt.fields.r,
 				push:  tt.fields.push,
 			}
-			got, err := g.Version(tt.args.stage, tt.args.headOnly)
+			got, err := g.Version(tt.args.stage, tt.args.headOnly, tt.args.useHash)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Version() error = %v, wantErr %v", err, tt.wantErr)
 				return

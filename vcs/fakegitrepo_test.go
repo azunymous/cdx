@@ -65,3 +65,7 @@ func (f *FakeGitRepo) TagsForModule(app string, stage ...string) ([]string, erro
 	}
 	return []string{"module-tag-1.1.1"}, f.passedModuleErr
 }
+
+func (f *FakeGitRepo) HeadHash() (string, error) {
+	return "hash", nil
+}

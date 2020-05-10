@@ -11,7 +11,7 @@ type Versioned interface {
 	// Promote promotes the current version to a new stage - moving past a 'gate'.
 	Promote(stage string) error
 	// Version returns the highest version. Varying at what it looks at depending on the optional provided modifiers.
-	Version(stage string, headOnly bool) (string, error)
+	Version(stage string, headOnly bool, useHash bool) (string, error)
 
 	// Distribute distributes the current state of the system to remotes.
 	Distribute() error

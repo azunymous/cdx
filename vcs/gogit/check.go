@@ -21,6 +21,14 @@ func (r *Repo) OnMaster() bool {
 
 }
 
+func (r *Repo) HeadHash() (string, error) {
+	head, err := r.gitRepo.Head()
+	if err != nil {
+		return "", err
+	}
+	return head.Hash().String(), nil
+}
+
 func CheckIfError(err error) {
 	if err != nil {
 		log.Fatal(err)
