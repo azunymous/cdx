@@ -22,7 +22,7 @@ jobs:
         run: |
           for GOOS in darwin linux; do
               for GOARCH in amd64; do
-                  go build -v -o cdx-$GOOS-$GOARCH ./cmd/cdx
+                  GOOS=$GOOS GOARCH=$GOARCH go build -v -o cdx-$GOOS-$GOARCH ./cmd/cdx
               done
           done
       - name: Create Release
