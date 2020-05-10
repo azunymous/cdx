@@ -50,7 +50,7 @@ func (r *Repo) TagsForHead(module string, stage ...string) ([]string, error) {
 
 	var t []string
 	_ = tags.ForEach(func(reference *plumbing.Reference) error {
-		if reference.Hash() == *current && regex.MatchString(reference.Name().Short()) {
+		if (reference.Hash() == *current && regex.MatchString(reference.Name().Short())) || r.annotatedMatch(reference, current, regex) {
 			t = append(t, reference.Name().Short())
 		}
 		return nil
@@ -86,4 +86,19 @@ func (r *Repo) TagsForModule(module string, stage ...string) ([]string, error) {
 	})
 	sort.Strings(t)
 	return t, nil
+}
+
+func (r *Repo) annotatedMatch(reference *plumbing.Reference, hash *plumbing.Hash, regex *regexp.Regexp) bool {
+	obj, err := r.gitRepo.TagObject(reference.Hash())
+	if err != nil {
+		return false
+	}
+	commit, err := obj.Commit()
+	if err != nil {
+		return false
+	}
+	if commit.Hash == *hash && regex.MatchString(obj.Name) {
+		return true
+	}
+	return false
 }

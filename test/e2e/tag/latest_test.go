@@ -31,6 +31,21 @@ func TestLatestGetsTagsFromRepository(t *testing.T) {
 	check.Equals(t, "", stdErr.String())
 }
 
+func TestLatestGetsAnnotatedTagsFromRepository(t *testing.T) {
+	_ = createTempGitDir()
+	_, _ = exec.Command("git", "tag", "app-0.1.0", "-a", "-m", "").CombinedOutput()
+
+	command := exec.Command(cdxCmd, "tag", "latest", "-n", "app")
+	var stdOut bytes.Buffer
+	var stdErr bytes.Buffer
+	command.Stdout = &stdOut
+	command.Stderr = &stdErr
+	err := command.Run()
+	check.Equals(t, "", stdErr.String())
+	check.Ok(t, err)
+	check.Equals(t, "0.1.0\n", stdOut.String())
+}
+
 func TestLatestGetsHashFromRepositoryWhenNoTagsAndHashFlagProvided(t *testing.T) {
 	_ = createTempGitDir()
 

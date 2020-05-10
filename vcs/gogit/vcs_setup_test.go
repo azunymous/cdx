@@ -53,6 +53,16 @@ func createVersionTag(fs billy.Filesystem, tag string) {
 	_, _ = r.CreateTag(tag, *revision, nil)
 }
 
+func createAnnotatedVersionTag(fs billy.Filesystem, tag string) {
+	r, _ := git.Open(filesystem2.NewStorage(fs, cache.NewObjectLRUDefault()), fs)
+	revision, _ := r.ResolveRevision("HEAD")
+	_, _ = r.CreateTag(tag, *revision, &git.CreateTagOptions{Message: " ", Tagger: &object.Signature{
+		Name:  "",
+		Email: "",
+		When:  time.Time{},
+	}})
+}
+
 func tagExistsAtHead(fs billy.Filesystem, tag string) error {
 	r, _ := git.Open(filesystem2.NewStorage(fs, cache.NewObjectLRUDefault()), fs)
 	revision, _ := r.ResolveRevision("HEAD")
