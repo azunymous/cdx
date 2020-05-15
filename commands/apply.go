@@ -28,12 +28,13 @@ func addApply(topLevel *cobra.Command) {
 		Args: cobra.ExactArgs(1),
 	}
 	options.AddResetArg(applyCmd, patchOpts)
+	options.AddInsecureArg(applyCmd, patchOpts)
 	topLevel.AddCommand(applyCmd)
 }
 
 func apply(name string, patchOpts *options.Patch) error {
 	logrus.Printf("Applying ")
-	c, closeFunc, err := watch.NewClient()
+	c, closeFunc, err := watch.NewClient(patchOpts.Insecure)
 	if err != nil {
 		return err
 	}

@@ -6,6 +6,7 @@ import (
 	"github.com/azunymous/cdx/watch/diff"
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
 	"log"
 	"net"
 )
@@ -19,18 +20,26 @@ type DiffStore interface {
 	Set(key, value string) error
 }
 
-func NewServer(store DiffStore) error {
+func NewServer(store DiffStore, insecure bool) error {
 	srv := &DiffServer{db: store}
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", 19443))
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
-	grpcServer := grpc.NewServer()
+	var srvOpts []grpc.ServerOption
+	if !insecure {
+		c, err := credentials.NewServerTLSFromFile("server.pem", "server.key")
+		if err != nil {
+			return fmt.Errorf("failed to find certificate files server.pem and server.key: %v", err)
+		}
+		srvOpts = append(srvOpts, grpc.Creds(c))
+	}
+	grpcServer := grpc.NewServer(srvOpts...)
 	diff.RegisterDiffServer(grpcServer, srv)
 	return grpcServer.Serve(lis)
 }
 
-func (d *DiffServer) SendDiff(ctx context.Context, request *diff.DiffRequest) (*diff.DiffCommits, error) {
+func (d *DiffServer) SendDiff(_ context.Context, request *diff.DiffRequest) (*diff.DiffCommits, error) {
 	logrus.Infof("Received message %s", request.Name)
 	commits, err := d.db.Get(request.GetName())
 	if err != nil {
@@ -39,7 +48,7 @@ func (d *DiffServer) SendDiff(ctx context.Context, request *diff.DiffRequest) (*
 	return &diff.DiffCommits{Commits: commits}, nil
 }
 
-func (d *DiffServer) UploadDiff(ctx context.Context, reply *diff.DiffCommits) (*diff.DiffConfirm, error) {
+func (d *DiffServer) UploadDiff(_ context.Context, reply *diff.DiffCommits) (*diff.DiffConfirm, error) {
 	logrus.Infof("Received message %s", reply.Name)
 	err := d.db.Set(reply.GetName(), reply.GetCommits())
 	if err != nil {

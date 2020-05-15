@@ -9,9 +9,10 @@ import (
 	"os/exec"
 )
 
-func NewShareClient() (diff.DiffClient, func(), error) {
+func NewShareClient(insecure bool) (diff.DiffClient, func(), error) {
 	target := ":19443"
-	conn, err := grpc.Dial(target, grpc.WithInsecure())
+	opts := createDialOptions(insecure)
+	conn, err := grpc.Dial(target, opts...)
 	if err != nil {
 		return nil, nil, err
 	}
