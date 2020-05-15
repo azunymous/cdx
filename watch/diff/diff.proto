@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+option go_package = "./watch/diff";
+
+package diff;
+
+// The diff service definition.
+service Diff {
+    // Sends a greeting
+    rpc SendDiff (DiffRequest) returns (DiffReply) {}
+}
+
+// The request message
+message DiffRequest {
+    string name = 1;
+}
+
+// The response message containing the diff
+message DiffReply {
+    string message = 1;
+}

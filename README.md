@@ -72,6 +72,8 @@ You can build `cdx` with `go build ./cmd/cdx` at the root of this repository.
 You need Go installed with support for Go modules. 
 
 ## Notes
+- cdx uses lightweight tags for versioning. Currently `latest` can detect annotated 
+tags, but cdx does not support versioning with them.
 - The `--push` flag delegates to `git push`, other commands use the go-git library and have no
 dependencies
 - `cdx tag` does not enforce ordered tagging. If you run `cdx tag release` from a branch or on an
