@@ -23,7 +23,7 @@ your git repository
 	}
 
 	addCreate(shareCmd)
-	addJoin(shareCmd)
+	addApply(shareCmd)
 	topLevel.AddCommand(shareCmd)
 }
 

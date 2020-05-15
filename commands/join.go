@@ -12,23 +12,23 @@ import (
 )
 
 // addRelease adds the increment command to a top level command.
-func addJoin(topLevel *cobra.Command) {
-	joinCmd := &cobra.Command{
-		Use:   "join",
-		Short: "Join a shared workspace",
-		Long: `The join command connects server to update your workspace
+func addApply(topLevel *cobra.Command) {
+	applyCmd := &cobra.Command{
+		Use:   "apply",
+		Short: "Apply a shared workspace's changed to your local changes",
+		Long: `The apply command connects to a server to update your workspace
 `,
 		Run: func(cmd *cobra.Command, args []string) {
-			err := join()
+			err := apply()
 			if err != nil {
 				logrus.Fatal(err)
 			}
 		},
 	}
-	topLevel.AddCommand(joinCmd)
+	topLevel.AddCommand(applyCmd)
 }
 
-func join() error {
+func apply() error {
 	logrus.Printf("Joining ")
 	c, closeFunc, err := watch.NewClient()
 	if err != nil {
