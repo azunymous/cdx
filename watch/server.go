@@ -4,24 +4,23 @@ import (
 	"context"
 	"fmt"
 	"github.com/azunymous/cdx/watch/diff"
-	"github.com/patrickmn/go-cache"
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"log"
 	"net"
-	"time"
 )
 
-const defaultExpiration = 5 * time.Minute
-const cleanupInterval = 10 * time.Minute
-
 type DiffServer struct {
-	db *cache.Cache
+	db DiffStore
 }
 
-func NewServer() error {
-	c := cache.New(defaultExpiration, cleanupInterval)
-	srv := &DiffServer{db: c}
+type DiffStore interface {
+	Get(key string) (string, error)
+	Set(key, value string) error
+}
+
+func NewServer(store DiffStore) error {
+	srv := &DiffServer{db: store}
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", 19443))
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
@@ -33,7 +32,7 @@ func NewServer() error {
 
 func (d *DiffServer) SendDiff(ctx context.Context, request *diff.DiffRequest) (*diff.DiffCommits, error) {
 	logrus.Infof("Received message %s", request.Name)
-	commits, err := d.getDiff(request.GetName())
+	commits, err := d.db.Get(request.GetName())
 	if err != nil {
 		return nil, err
 	}
@@ -42,22 +41,9 @@ func (d *DiffServer) SendDiff(ctx context.Context, request *diff.DiffRequest) (*
 
 func (d *DiffServer) UploadDiff(ctx context.Context, reply *diff.DiffCommits) (*diff.DiffConfirm, error) {
 	logrus.Infof("Received message %s", reply.Name)
-	err := d.saveDiff(reply.GetName(), reply.GetCommits())
+	err := d.db.Set(reply.GetName(), reply.GetCommits())
 	if err != nil {
 		return nil, err
 	}
 	return &diff.DiffConfirm{}, nil
-}
-
-func (d *DiffServer) getDiff(name string) (string, error) {
-	get, ok := d.db.Get(name)
-	if !ok {
-		return "", fmt.Errorf("no patch with name %s found", name)
-	}
-	return get.(string), nil
-}
-
-func (d *DiffServer) saveDiff(name string, commits string) error {
-	d.db.Set(name, commits, cache.DefaultExpiration)
-	return nil
 }

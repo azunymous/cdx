@@ -2,8 +2,10 @@ package commands
 
 import (
 	"github.com/azunymous/cdx/watch"
+	"github.com/azunymous/cdx/watch/gocache"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
+	"time"
 )
 
 // addRelease adds the increment command to a top level command.
@@ -23,7 +25,10 @@ func addStart(topLevel *cobra.Command) {
 	topLevel.AddCommand(createCmd)
 }
 
+const defaultExpiration = 5 * time.Minute
+const cleanupInterval = 10 * time.Minute
+
 func start() error {
 	logrus.Printf("Sharing ")
-	return watch.NewServer()
+	return watch.NewServer(gocache.NewGoCache(defaultExpiration, cleanupInterval))
 }
