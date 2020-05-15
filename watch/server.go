@@ -1,19 +1,17 @@
 package watch
 
 import (
+	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"github.com/azunymous/cdx/watch/diff"
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"log"
 	"net"
+	"os/exec"
 )
-
-func Watch() error {
-
-	return nil
-}
 
 type DiffServer struct {
 }
@@ -30,5 +28,24 @@ func NewServer() error {
 
 func (d DiffServer) SendDiff(ctx context.Context, request *diff.DiffRequest) (*diff.DiffReply, error) {
 	logrus.Infof("Received message %s", request.Name)
-	return &diff.DiffReply{Message: "Hello world!"}, nil
+	//diffs := getDiff(ctx)
+	commits, err := getDiffCommits(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return &diff.DiffReply{Committed: commits}, nil
+}
+
+func getDiffCommits(ctx context.Context) (string, error) {
+	cmd := exec.CommandContext(ctx, "git", "format-patch", "origin/master", "--stdout")
+	var stdOut bytes.Buffer
+	var stdErr bytes.Buffer
+	cmd.Stdout = &stdOut
+	cmd.Stderr = &stdErr
+
+	err := cmd.Run()
+	if err != nil {
+		return "", errors.New(stdErr.String())
+	}
+	return stdOut.String(), nil
 }

@@ -1,11 +1,14 @@
 package commands
 
 import (
+	"bytes"
 	"context"
 	"github.com/azunymous/cdx/watch"
 	"github.com/azunymous/cdx/watch/diff"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
+	"os/exec"
+	"strings"
 )
 
 // addRelease adds the increment command to a top level command.
@@ -33,10 +36,16 @@ func join() error {
 	}
 	defer closeFunc()
 	in := &diff.DiffRequest{Name: "from diff client"}
-	resp, err := c.SendDiff(context.Background(), in)
+	ctx := context.Background()
+	resp, err := c.SendDiff(ctx, in)
 	if err != nil {
 		return err
 	}
-	logrus.Info(resp.String())
-	return nil
+	logrus.Info(strings.SplitN(resp.Committed, "\n", 2)[0])
+	cmd := exec.CommandContext(ctx, "git", "am", "-")
+	cmd.Stdin = bytes.NewBufferString(resp.Committed)
+	output, err := cmd.CombinedOutput()
+	logrus.Info(string(output))
+	return err
+
 }

@@ -17,5 +17,6 @@ message DiffRequest {
 
 // The response message containing the diff
 message DiffReply {
-    string message = 1;
+    string committed = 1;
+    string diff = 2;
 }
