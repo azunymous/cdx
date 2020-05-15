@@ -2,6 +2,7 @@
 - pass around a logger of sorts
 
 - Add ability to share diffs quickly in one command
+- add undo command to use reflog to reset back to pre shared state
 
 - Support annotated tags for `latest` command with full test coverage
 
