@@ -1,16 +1,13 @@
 package watch
 
 import (
-	"bytes"
 	"context"
-	"errors"
 	"fmt"
 	"github.com/azunymous/cdx/watch/diff"
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"log"
 	"net"
-	"os/exec"
 )
 
 type DiffServer struct {
@@ -26,26 +23,28 @@ func NewServer() error {
 	return grpcServer.Serve(lis)
 }
 
-func (d DiffServer) SendDiff(ctx context.Context, request *diff.DiffRequest) (*diff.DiffReply, error) {
+func (d DiffServer) SendDiff(ctx context.Context, request *diff.DiffRequest) (*diff.DiffCommits, error) {
 	logrus.Infof("Received message %s", request.Name)
-	//diffs := getDiff(ctx)
-	commits, err := getDiffCommits(ctx)
+	commits, err := getDiff(request.GetName())
 	if err != nil {
 		return nil, err
 	}
-	return &diff.DiffReply{Committed: commits}, nil
+	return &diff.DiffCommits{Commits: commits}, nil
 }
 
-func getDiffCommits(ctx context.Context) (string, error) {
-	cmd := exec.CommandContext(ctx, "git", "format-patch", "origin/master", "--stdout")
-	var stdOut bytes.Buffer
-	var stdErr bytes.Buffer
-	cmd.Stdout = &stdOut
-	cmd.Stderr = &stdErr
-
-	err := cmd.Run()
+func (d DiffServer) UploadDiff(ctx context.Context, reply *diff.DiffCommits) (*diff.DiffConfirm, error) {
+	logrus.Infof("Received message %s", reply.Name)
+	err := saveDiff(reply.GetName(), reply.GetCommits())
 	if err != nil {
-		return "", errors.New(stdErr.String())
+		return nil, err
 	}
-	return stdOut.String(), nil
+	return &diff.DiffConfirm{}, nil
+}
+
+func getDiff(name string) (string, error) {
+	return "", nil
+}
+
+func saveDiff(name string, commits string) error {
+	return nil
 }

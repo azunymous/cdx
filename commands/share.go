@@ -22,8 +22,9 @@ your git repository
 		Args: cobra.NoArgs,
 	}
 
-	addCreate(shareCmd)
+	addStart(shareCmd)
 	addApply(shareCmd)
+	addUpload(shareCmd)
 	topLevel.AddCommand(shareCmd)
 }
 

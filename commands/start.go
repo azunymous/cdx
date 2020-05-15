@@ -7,11 +7,11 @@ import (
 )
 
 // addRelease adds the increment command to a top level command.
-func addCreate(topLevel *cobra.Command) {
+func addStart(topLevel *cobra.Command) {
 	createCmd := &cobra.Command{
 		Use:   "start",
-		Short: "Start sharing a workspace",
-		Long: `The start command runs a server to share your workspace
+		Short: "Start a sharing server",
+		Long: `The start command runs a server to facilitate sharing workspaces
 `,
 		Run: func(cmd *cobra.Command, args []string) {
 			err := start()

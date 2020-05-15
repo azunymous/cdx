@@ -6,8 +6,13 @@ package diff;
 
 // The diff service definition.
 service Diff {
-    // Sends a greeting
-    rpc SendDiff (DiffRequest) returns (DiffReply) {}
+    // Sends a diff patch to be applied
+    rpc SendDiff (DiffRequest) returns (DiffCommits) {
+    }
+
+    // Upload diff patches
+    rpc UploadDiff (DiffCommits) returns (DiffConfirm) {
+    }
 }
 
 // The request message
@@ -16,7 +21,10 @@ message DiffRequest {
 }
 
 // The response message containing the diff
-message DiffReply {
-    string committed = 1;
-    string diff = 2;
+message DiffCommits {
+    string name = 1;
+    string commits = 2;
+}
+
+message DiffConfirm {
 }
