@@ -9,12 +9,12 @@ import (
 // addRelease adds the increment command to a top level command.
 func addCreate(topLevel *cobra.Command) {
 	createCmd := &cobra.Command{
-		Use:   "create",
+		Use:   "start",
 		Short: "Start sharing a workspace",
-		Long: `The create command runs a server to share your workspace
+		Long: `The start command runs a server to share your workspace
 `,
 		Run: func(cmd *cobra.Command, args []string) {
-			err := create()
+			err := start()
 			if err != nil {
 				logrus.Fatal(err)
 			}
@@ -23,7 +23,7 @@ func addCreate(topLevel *cobra.Command) {
 	topLevel.AddCommand(createCmd)
 }
 
-func create() error {
+func start() error {
 	logrus.Printf("Sharing ")
 	return watch.NewServer()
 }

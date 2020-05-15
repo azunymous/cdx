@@ -31,7 +31,7 @@ func addApply(topLevel *cobra.Command) {
 }
 
 func apply(patchOpts *options.Patch) error {
-	logrus.Printf("Joining ")
+	logrus.Printf("Applying ")
 	c, closeFunc, err := watch.NewClient()
 	if err != nil {
 		return err
@@ -43,7 +43,6 @@ func apply(patchOpts *options.Patch) error {
 	if err != nil {
 		return err
 	}
-	logrus.Info(resp.Committed)
 	if patchOpts.Reset {
 		output, err := exec.CommandContext(ctx, "git", "reset", "origin/master", "--hard").CombinedOutput()
 		if err != nil {

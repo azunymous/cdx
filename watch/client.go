@@ -6,7 +6,7 @@ import (
 )
 
 func NewClient() (diff.DiffClient, func(), error) {
-	target := ":8080"
+	target := ":19443"
 	conn, err := grpc.Dial(target, grpc.WithInsecure())
 	if err != nil {
 		return nil, nil, err

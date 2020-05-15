@@ -14,7 +14,7 @@ func addShare(topLevel *cobra.Command) {
 your git repository
 `,
 		Run: func(cmd *cobra.Command, args []string) {
-			err := share(cmd, args)
+			err := share(cmd)
 			if err != nil {
 				logrus.Fatal(err)
 			}
@@ -27,6 +27,6 @@ your git repository
 	topLevel.AddCommand(shareCmd)
 }
 
-func share(cmd *cobra.Command, args []string) error {
+func share(cmd *cobra.Command) error {
 	return cmd.Help()
 }
