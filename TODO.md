@@ -1,10 +1,9 @@
 # TODO
 - pass around a logger of sorts
 
-- Add ability to share diffs quickly in one command
-- Use hostname for default server
-- Use secure hostname by default
 - Change cache to be separate from the server deployment 
+- Add optional password protection to patches
+- Prevent patches from being overriden
 
 - Support annotated tags for `latest` command with full test coverage
 

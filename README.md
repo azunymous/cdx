@@ -7,6 +7,16 @@
 - Promoting versions of applications or modules
 - Getting the latest version or the latest promoted version from Git tags
 
+## Install binary release (Mac or Linux)
+Download the [latest release](https://github.com/azunymous/cdx/releases/latest) 
+binary for your platform. Make it executable (`chmod +x <binary name>`) and
+move it somewhere on your `PATH`
+
+## Install with Go
+```shell script
+GO111MODULE=on go get github.com/azunymous/cdx/cmd/cdx
+```
+
 ## `cdx tag` commands
 
 `cdx tag` allows you to manage your tags for versioning easily. It can be used for
