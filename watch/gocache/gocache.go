@@ -27,6 +27,9 @@ func (g *GoCache) Get(key string) (string, error) {
 }
 
 func (g *GoCache) Set(key, value string) error {
+	if _, ok := g.c.Get(key); ok {
+		return fmt.Errorf("patch with name %s already exists", key)
+	}
 	g.c.Set(key, value, cache.DefaultExpiration)
 	return nil
 }

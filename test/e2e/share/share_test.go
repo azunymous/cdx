@@ -42,5 +42,20 @@ func TestUploadUploadsPatchCanBeDownloaded(t *testing.T) {
 	gitLog, err := exec.Command("git", "log", "-1", "--pretty=%B").Output()
 	check.Ok(t, err)
 	check.Equals(t, `"Commit 2"`, strings.TrimSpace(string(gitLog)))
+}
 
+func TestUploadCannotUploadExistingPatch(t *testing.T) {
+	server, c := e2e.StartCdxShareServer()
+	t.Cleanup(c)
+
+	fn := e2e.CreateTempGitDir()
+	_ = e2e.CreateTempGitRemote(fn)
+
+	command := exec.Command(e2e.CDX, "share", "upload", "patchName", "--insecure", "--uri", server)
+	err := command.Run()
+	check.Ok(t, err)
+
+	command = exec.Command(e2e.CDX, "share", "upload", "patchName", "--insecure", "--uri", server)
+	err = command.Run()
+	check.Assert(t, err != nil, "Expected error not to be nil, got: %v", err)
 }
