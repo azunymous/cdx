@@ -20,9 +20,10 @@ jobs:
         uses: actions/checkout@v2
       - name: Build
         run: |
+          go build ./cmd/cdx
           for GOOS in darwin linux; do
               for GOARCH in amd64; do
-                  GOOS=$GOOS GOARCH=$GOARCH go build -v -o cdx-$GOOS-$GOARCH ./cmd/cdx
+                  GOOS=$GOOS GOARCH=$GOARCH go build "-X main.version=`./cdx tag latest -n cdx --head --fallback`" -v -o cdx-$GOOS-$GOARCH ./cmd/cdx
               done
           done
       - name: Create Release
