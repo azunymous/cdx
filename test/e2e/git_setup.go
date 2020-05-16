@@ -1,6 +1,6 @@
 //+build e2e
 
-package tag
+package e2e
 
 import (
 	"io/ioutil"
@@ -8,7 +8,7 @@ import (
 	"os/exec"
 )
 
-func createTempGitDir() string {
+func CreateTempGitDir() string {
 	fn, _ := ioutil.TempDir(os.TempDir(), "cdx-test-")
 	_ = os.Chdir(fn)
 	_, _ = exec.Command("git", "init").CombinedOutput()
@@ -18,19 +18,19 @@ func createTempGitDir() string {
 	return fn
 }
 
-func createTag(dir, tag string) {
+func CreateTag(dir, tag string) {
 	_ = os.Chdir(dir)
 	_, _ = exec.Command("git", "tag", tag).CombinedOutput()
 }
 
-func createCommit(dir, msg string) {
+func CreateCommit(dir, msg string) {
 	_ = os.Chdir(dir)
 	_, _ = exec.Command("bash", "-c", "echo '"+msg+"' > file.txt").CombinedOutput()
 	_, _ = exec.Command("git", "add", "file.txt").CombinedOutput()
 	_, _ = exec.Command("git", "commit", "-m", `"`+msg+`"`).CombinedOutput()
 }
 
-func createTempGitRemote(gitDir string) string {
+func CreateTempGitRemote(gitDir string) string {
 	remoteDir, _ := ioutil.TempDir(os.TempDir(), "cdx-remote-*.git")
 	_ = os.Chdir(remoteDir)
 	_, _ = exec.Command("git", "init", "--bare").CombinedOutput()

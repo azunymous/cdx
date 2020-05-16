@@ -1,16 +1,16 @@
-package tag
+package e2e
 
 import (
 	"github.com/sirupsen/logrus"
 	"os"
 )
 
-var cdxCmd = "cdx"
+var CDX = "cdx"
 
 func init() {
 	cmd, set := os.LookupEnv("CDX_CMD")
 	if set {
 		logrus.Info("Using command " + cmd)
-		cdxCmd = cmd
+		CDX = cmd
 	}
 }
