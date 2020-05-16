@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cdx
+  labels:
+    app: cdx
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: cdx
+      labels:
+        app: cdx
+    spec:
+      containers:
+        - name: cdx
+          image: cdx-image
+          args:
+            - share
+            - start
+            - --insecure
+          imagePullPolicy: IfNotPresent
+      restartPolicy: Always
+  selector:
+    matchLabels:
+      app: cdx

@@ -25,12 +25,13 @@ func addUpload(topLevel *cobra.Command) {
 		Args: cobra.ExactArgs(1),
 	}
 	options.AddInsecureArg(uploadCmd, patchOpts)
+	options.AddTargetArg(uploadCmd, patchOpts)
 	topLevel.AddCommand(uploadCmd)
 }
 
 func upload(name string, opts *options.Patch) error {
 	logrus.Printf("Uploading ")
-	c, closeFunc, err := watch.NewShareClient(opts.Insecure)
+	c, closeFunc, err := watch.NewShareClient(opts.Target, opts.Insecure)
 	ctx := context.Background()
 	if err != nil {
 		return err

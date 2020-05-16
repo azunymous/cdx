@@ -7,8 +7,7 @@ import (
 	"google.golang.org/grpc/credentials"
 )
 
-func NewClient(insecure bool) (diff.DiffClient, func(), error) {
-	target := ":19443"
+func NewClient(target string, insecure bool) (diff.DiffClient, func(), error) {
 	conn, err := grpc.Dial(target, createDialOptions(insecure)...)
 	if err != nil {
 		return nil, nil, err

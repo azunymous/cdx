@@ -25,16 +25,18 @@ func addApply(topLevel *cobra.Command) {
 				logrus.Fatal(err)
 			}
 		},
-		Args: cobra.ExactArgs(1),
+		Args:    cobra.ExactArgs(1),
+		Aliases: []string{"download"},
 	}
 	options.AddResetArg(applyCmd, patchOpts)
 	options.AddInsecureArg(applyCmd, patchOpts)
+	options.AddTargetArg(applyCmd, patchOpts)
 	topLevel.AddCommand(applyCmd)
 }
 
 func apply(name string, patchOpts *options.Patch) error {
 	logrus.Printf("Applying ")
-	c, closeFunc, err := watch.NewClient(patchOpts.Insecure)
+	c, closeFunc, err := watch.NewClient(patchOpts.Target, patchOpts.Insecure)
 	if err != nil {
 		return err
 	}

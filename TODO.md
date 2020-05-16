@@ -2,7 +2,9 @@
 - pass around a logger of sorts
 
 - Add ability to share diffs quickly in one command
-- add undo command to use reflog to reset back to pre shared state
+- Use hostname for default server
+- Use secure hostname by default
+- Change cache to be separate from the server deployment 
 
 - Support annotated tags for `latest` command with full test coverage
 
