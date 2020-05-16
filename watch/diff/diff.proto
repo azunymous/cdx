@@ -24,6 +24,8 @@ message DiffRequest {
 message DiffCommits {
     string name = 1;
     string commits = 2;
+    bytes salt = 3;
+    bool encrypted = 4;
 }
 
 message DiffConfirm {
