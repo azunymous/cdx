@@ -16,8 +16,9 @@ func addApply(topLevel *cobra.Command) {
 	patchOpts := &options.Patch{}
 	applyCmd := &cobra.Command{
 		Use:   "apply [patch name]",
-		Short: "Apply a shared workspace's changed to your local changes",
-		Long: `The apply command connects to a server to update your workspace with the required patch
+		Short: "[ALPHA] Apply a shared workspace's changes to your Git repository",
+		Long: `The apply command connects to a server and applies the provided a git patch to
+your workspace
 `,
 		Run: func(cmd *cobra.Command, args []string) {
 			err := apply(args[0], patchOpts)

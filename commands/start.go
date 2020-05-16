@@ -14,8 +14,8 @@ func addStart(topLevel *cobra.Command) {
 	patchOpts := &options.Patch{}
 	createCmd := &cobra.Command{
 		Use:   "start",
-		Short: "Start a sharing server",
-		Long: `The start command runs a server to facilitate sharing workspaces
+		Short: "[ALPHA] Start a sharing server",
+		Long: `The start command runs a server to facilitate sharing git patches quickly
 `,
 		Run: func(cmd *cobra.Command, args []string) {
 			err := start(patchOpts)

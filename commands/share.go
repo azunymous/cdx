@@ -9,9 +9,11 @@ import (
 func addShare(topLevel *cobra.Command) {
 	shareCmd := &cobra.Command{
 		Use:   "share",
-		Short: "Share repositories",
+		Short: "[ALPHA] Share repositories",
 		Long: `The share command allows you to share
 your git repository
+
+These commands are currently in an alpha state and are untested.
 `,
 		Run: func(cmd *cobra.Command, args []string) {
 			err := share(cmd)
