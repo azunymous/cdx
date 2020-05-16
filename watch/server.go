@@ -20,9 +20,9 @@ type DiffStore interface {
 	Set(key, value string) error
 }
 
-func NewServer(store DiffStore, insecure bool) error {
+func NewServer(store DiffStore, port int, insecure bool) error {
 	srv := &DiffServer{db: store}
-	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", 19443))
+	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", port))
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}

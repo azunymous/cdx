@@ -24,6 +24,7 @@ func addStart(topLevel *cobra.Command) {
 			}
 		},
 	}
+	options.AddPortArg(createCmd, patchOpts)
 	options.AddInsecureArg(createCmd, patchOpts)
 	topLevel.AddCommand(createCmd)
 }
@@ -33,5 +34,5 @@ const cleanupInterval = 10 * time.Minute
 
 func start(patchOpts *options.Patch) error {
 	logrus.Printf("Sharing ")
-	return watch.NewServer(gocache.NewGoCache(defaultExpiration, cleanupInterval), patchOpts.Insecure)
+	return watch.NewServer(gocache.NewGoCache(defaultExpiration, cleanupInterval), patchOpts.Port, patchOpts.Insecure)
 }
