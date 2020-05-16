@@ -1,0 +1,20 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: cdx
+  annotations:
+    nginx.ingress.kubernetes.io/backend-protocol: "GRPC"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+spec:
+  tls:
+    - hosts:
+        - cdx.vvv.run
+      secretName: cdx-tls
+  rules:
+    - host: cdx.vvv.run
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: cdx
+              servicePort: 19443

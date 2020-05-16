@@ -6,7 +6,7 @@ namespace: cdx
 resources:
   - namespace.yaml
   - ../base
-  - nodeport-service.yaml
+  - ingress.yaml
 
 images:
   - name: cdx-image

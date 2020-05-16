@@ -13,12 +13,11 @@ func AddResetArg(cmd *cobra.Command, p *Patch) {
 	cmd.Flags().BoolVarP(&p.Reset, "reset", "r", true, "Reset (hard) to origin/master before applying patch")
 }
 
-// TODO This is a bad default! Set this way currently for convenience. This will be fixed when a real default server is made
 func AddInsecureArg(cmd *cobra.Command, p *Patch) {
-	cmd.Flags().BoolVarP(&p.Insecure, "insecure", "i", true, "Insecure connection to GRPC server")
+	cmd.Flags().BoolVarP(&p.Insecure, "insecure", "i", false, "Insecure connection to GRPC server")
 }
 
-const defaultServer = "35.209.179.20:30443"
+const defaultServer = "cdx.vvv.run:443"
 
 func AddTargetArg(cmd *cobra.Command, r *Patch) {
 	cmd.Flags().StringVarP(&r.Target, "uri", "u", defaultServer, "URI to use for pushing and pulling patches")
