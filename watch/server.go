@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/azunymous/cdx/watch/diff"
+	"github.com/golang/protobuf/proto"
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
@@ -17,7 +18,7 @@ type DiffServer struct {
 
 type DiffStore interface {
 	Get(key string) (string, error)
-	Set(key, value string) error
+	Set(key string, value string) error
 }
 
 func NewServer(store DiffStore, port int, insecure bool) error {
@@ -41,16 +42,18 @@ func NewServer(store DiffStore, port int, insecure bool) error {
 
 func (d *DiffServer) SendDiff(_ context.Context, request *diff.DiffRequest) (*diff.DiffCommits, error) {
 	logrus.Infof("Received message %s", request.Name)
-	commits, err := d.db.Get(request.GetName())
+	message, err := d.db.Get(request.GetName())
 	if err != nil {
 		return nil, err
 	}
-	return &diff.DiffCommits{Commits: commits}, nil
+	reply := &diff.DiffCommits{}
+	err = proto.UnmarshalText(message, reply)
+	return reply, err
 }
 
 func (d *DiffServer) UploadDiff(_ context.Context, reply *diff.DiffCommits) (*diff.DiffConfirm, error) {
 	logrus.Infof("Received message %s", reply.Name)
-	err := d.db.Set(reply.GetName(), reply.GetCommits())
+	err := d.db.Set(reply.GetName(), proto.MarshalTextString(reply))
 	if err != nil {
 		return nil, err
 	}

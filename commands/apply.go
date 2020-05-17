@@ -29,6 +29,7 @@ your workspace
 		Args:    cobra.ExactArgs(1),
 		Aliases: []string{"download"},
 	}
+	options.AddPasswordArg(applyCmd, patchOpts)
 	options.AddResetArg(applyCmd, patchOpts)
 	options.AddInsecureArg(applyCmd, patchOpts)
 	options.AddTargetArg(applyCmd, patchOpts)
@@ -44,7 +45,7 @@ func apply(name string, patchOpts *options.Patch) error {
 	defer closeFunc()
 	in := &diff.DiffRequest{Name: name}
 	ctx := context.Background()
-	resp, err := c.SendDiff(ctx, in)
+	resp, err := watch.RequestDiffs(ctx, c, in, patchOpts.Password)
 	if err != nil {
 		return err
 	}
@@ -58,7 +59,7 @@ func apply(name string, patchOpts *options.Patch) error {
 		logrus.Infof("Resetting to origin/master: \n%s", string(output))
 	}
 	cmd := exec.CommandContext(ctx, "git", "am", "-")
-	cmd.Stdin = bytes.NewBufferString(resp.GetCommits())
+	cmd.Stdin = bytes.NewBuffer(resp.GetCommits())
 	output, err := cmd.CombinedOutput()
 	logrus.Info(string(output))
 	return err

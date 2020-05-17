@@ -23,7 +23,7 @@ message DiffRequest {
 // The response message containing the diff
 message DiffCommits {
     string name = 1;
-    string commits = 2;
+    bytes commits = 2;
     bytes salt = 3;
     bool encrypted = 4;
 }

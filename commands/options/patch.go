@@ -4,10 +4,15 @@ import "github.com/spf13/cobra"
 
 // App struct contains options regarding the application
 type Patch struct {
+	Password string
 	Reset    bool
 	Insecure bool
 	Target   string
 	Port     int
+}
+
+func AddPasswordArg(cmd *cobra.Command, r *Patch) {
+	cmd.Flags().StringVarP(&r.Password, "password", "p", "", "Password to use to encrypt/decrypt patch. Plaintext by default")
 }
 
 func AddResetArg(cmd *cobra.Command, p *Patch) {

@@ -1,6 +1,7 @@
 package watch
 
 import (
+	"context"
 	"crypto/tls"
 	"github.com/azunymous/cdx/watch/diff"
 	"google.golang.org/grpc"
@@ -17,6 +18,20 @@ func NewClient(target string, insecure bool) (diff.DiffClient, func(), error) {
 		func() {
 			defer conn.Close()
 		}, nil
+}
+
+func RequestDiffs(ctx context.Context, c diff.DiffClient, r *diff.DiffRequest, password string) (*diff.DiffCommits, error) {
+	resp, err := c.SendDiff(ctx, r)
+	if err != nil {
+		return nil, err
+	}
+	if password != "" {
+		resp.Commits, err = decrypt(resp.Commits, password, resp.Salt)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return resp, nil
 }
 
 func createDialOptions(insecure bool) []grpc.DialOption {

@@ -24,6 +24,7 @@ func addUpload(topLevel *cobra.Command) {
 		},
 		Args: cobra.ExactArgs(1),
 	}
+	options.AddPasswordArg(uploadCmd, patchOpts)
 	options.AddInsecureArg(uploadCmd, patchOpts)
 	options.AddTargetArg(uploadCmd, patchOpts)
 	topLevel.AddCommand(uploadCmd)
@@ -38,5 +39,5 @@ func upload(name string, opts *options.Patch) error {
 	}
 	defer closeFunc()
 
-	return watch.Upload(ctx, c, name)
+	return watch.Upload(ctx, c, name, opts.Password)
 }
