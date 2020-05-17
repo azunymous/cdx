@@ -3,6 +3,7 @@ package watch
 import (
 	"context"
 	"crypto/tls"
+	"errors"
 	"github.com/azunymous/cdx/watch/diff"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
@@ -24,6 +25,9 @@ func RequestDiffs(ctx context.Context, c diff.DiffClient, r *diff.DiffRequest, p
 	resp, err := c.SendDiff(ctx, r)
 	if err != nil {
 		return nil, err
+	}
+	if resp.Encrypted && password == "" {
+		return nil, errors.New("no password provided but the patch is encrypted")
 	}
 	if password != "" {
 		resp.Commits, err = decrypt(resp.Commits, password, resp.Salt)
