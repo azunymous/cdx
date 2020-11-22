@@ -30,13 +30,21 @@ func TestPromoteTagsRepository(t *testing.T) {
 	check.Ok(t, err)
 	tags := strings.Split(string(output), "\n")
 	sort.Strings(tags)
-	check.Equals(t, "app-0.1.0-promoted", tags[len(tags)-1])
+	check.Equals(t, "app-0.1.0+promoted", tags[len(tags)-1])
+}
+
+func TestCannotPromotePrereleaseTagsRepository(t *testing.T) {
+	dir := e2e.CreateTempGitDir()
+	e2e.CreateTag(dir, "app-0.1.0-RC1")
+	command := exec.Command(e2e.CDX, "tag", "promote", "-n", "app", "promoted")
+	err := command.Run()
+	check.Assert(t, err != nil, "expecting error to not be nil, got %v", err)
 }
 
 func TestPromoteTagsRepositoryAlreadyPromoted(t *testing.T) {
 	dir := e2e.CreateTempGitDir()
 	e2e.CreateTag(dir, "app-0.1.0")
-	e2e.CreateTag(dir, "app-0.1.0-promoted")
+	e2e.CreateTag(dir, "app-0.1.0+promoted")
 	command := exec.Command(e2e.CDX, "tag", "promote", "-n", "app", "promoted")
 	err := command.Run()
 	check.Ok(t, err)
@@ -44,7 +52,7 @@ func TestPromoteTagsRepositoryAlreadyPromoted(t *testing.T) {
 	check.Ok(t, err)
 	tags := strings.Split(string(output), "\n")
 	sort.Strings(tags)
-	check.Equals(t, "app-0.1.0-promoted", tags[len(tags)-1])
+	check.Equals(t, "app-0.1.0+promoted", tags[len(tags)-1])
 }
 
 func TestPromoteTagsRepositoryAndPushesTags(t *testing.T) {
@@ -59,14 +67,14 @@ func TestPromoteTagsRepositoryAndPushesTags(t *testing.T) {
 	check.Ok(t, err)
 	tags := strings.Split(string(output), "\n")
 	sort.Strings(tags)
-	check.Equals(t, "app-0.1.0-promoted", tags[len(tags)-1])
+	check.Equals(t, "app-0.1.0+promoted", tags[len(tags)-1])
 
 	_ = os.Chdir(rd)
 	output, err = exec.Command("git", "tag", "--points-at", "HEAD").CombinedOutput()
 	check.Ok(t, err)
 	tags = strings.Split(string(output), "\n")
 	sort.Strings(tags)
-	check.Equals(t, "app-0.1.0-promoted", tags[len(tags)-1])
+	check.Equals(t, "app-0.1.0+promoted", tags[len(tags)-1])
 }
 
 func TestPromoteTagsRepositoryAndPushesTags_detachedHead(t *testing.T) {
@@ -82,14 +90,14 @@ func TestPromoteTagsRepositoryAndPushesTags_detachedHead(t *testing.T) {
 	check.Ok(t, err)
 	tags := strings.Split(string(output), "\n")
 	sort.Strings(tags)
-	check.Equals(t, "app-0.1.0-promoted", tags[len(tags)-1])
+	check.Equals(t, "app-0.1.0+promoted", tags[len(tags)-1])
 
 	_ = os.Chdir(rd)
 	output, err = exec.Command("git", "tag", "--points-at", "HEAD").CombinedOutput()
 	check.Ok(t, err)
 	tags = strings.Split(string(output), "\n")
 	sort.Strings(tags)
-	check.Equals(t, "app-0.1.0-promoted", tags[len(tags)-1])
+	check.Equals(t, "app-0.1.0+promoted", tags[len(tags)-1])
 }
 
 func TestPromoteTagsRepositoryAndPushesTags_detachedHeadAndNonHeadTags(t *testing.T) {
@@ -111,12 +119,12 @@ func TestPromoteTagsRepositoryAndPushesTags_detachedHeadAndNonHeadTags(t *testin
 	check.Ok(t, err)
 	tags := strings.Split(string(output), "\n")
 	sort.Strings(tags)
-	check.Equals(t, "app-0.2.0-promoted", tags[len(tags)-1])
+	check.Equals(t, "app-0.2.0+promoted", tags[len(tags)-1])
 
 	_ = os.Chdir(rd)
 	output, err = exec.Command("git", "tag", "--points-at", "HEAD~1").CombinedOutput()
 	check.Ok(t, err)
 	tags = strings.Split(string(output), "\n")
 	sort.Strings(tags)
-	check.Equals(t, "app-0.2.0-promoted", tags[len(tags)-1])
+	check.Equals(t, "app-0.2.0+promoted", tags[len(tags)-1])
 }

@@ -33,7 +33,7 @@ func NewRepo() (*Repo, error) {
 func (r *Repo) TagsForHead(module string, stage ...string) ([]string, error) {
 	suffix := ""
 	if len(stage) > 0 && stage[0] != "" {
-		suffix = "-" + stage[0]
+		suffix = "\\+" + stage[0]
 	}
 
 	current, err := r.gitRepo.ResolveRevision("HEAD")
@@ -67,7 +67,7 @@ func (r *Repo) TagsForHead(module string, stage ...string) ([]string, error) {
 func (r *Repo) TagsForModule(module string, stage ...string) ([]string, error) {
 	suffix := ""
 	if len(stage) > 0 && stage[0] != "" {
-		suffix = "-" + stage[0]
+		suffix = "\\+" + stage[0]
 	}
 
 	tags, err := r.gitRepo.Tags()

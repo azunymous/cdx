@@ -31,14 +31,14 @@ the tag is:
 
 e.g `my-app-1.0.0`
 
-`cdx` can be used to mark successful test runs or release candidates. 
+`cdx` can be used to mark successful test runs or production candidates. 
 This results in a tag like the following: 
 
 ```
-<module/app name>-<semantic version>-<promotion-stage>
+<module/app name>-<semantic version>+<promotion-stage>
 ```
 
-e.g `my-app-1.0.0-rc1`
+e.g `my-app-1.0.0-rc1+passed-extended-tests`
 
 These are currently lightweight tags.
 
@@ -66,7 +66,7 @@ e.g if the current commit is tagged `my-app-0.1.0`.
 ```
 cdx tag promote -n my-app production
 ```
-Will tag the checked out commit with `my-app-0.1.0-production`
+Will tag the checked out commit with `my-app-0.1.0+production`
 
 ### Latest - `cdx tag latest -n <app name> [promotion stage]`
 

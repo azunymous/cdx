@@ -29,7 +29,7 @@ func (r *Repo) Promote(module, stage string) error {
 	}
 
 	current := tagsForHead[len(tagsForHead)-1]
-	promoted := current + "-" + stage
+	promoted := current + "+" + stage
 	r.log.Printf("Promoting version %s -> %s", current, promoted)
 	//
 	revision, err := r.gitRepo.ResolveRevision("HEAD")

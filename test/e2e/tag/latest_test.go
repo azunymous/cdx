@@ -98,6 +98,24 @@ func TestLatestGetsTagsFromRepositoryForMultipleCommits_UnnaturalSorting(t *test
 	check.Equals(t, "", stdErr.String())
 }
 
+func TestLatestGetsTagsFromRepositoryForMultipleCommits_Prerelease(t *testing.T) {
+	dir := e2e.CreateTempGitDir()
+	e2e.CreateTag(dir, "app-0.1.0-RC1")
+	e2e.CreateCommit(dir, "commit 2")
+	e2e.CreateTag(dir, "app-0.1.0")
+	e2e.CreateCommit(dir, "commit 3")
+
+	command := exec.Command(e2e.CDX, "tag", "latest", "-n", "app")
+	var stdOut bytes.Buffer
+	var stdErr bytes.Buffer
+	command.Stdout = &stdOut
+	command.Stderr = &stdErr
+	err := command.Run()
+	check.Ok(t, err)
+	check.Equals(t, "0.1.0\n", stdOut.String())
+	check.Equals(t, "", stdErr.String())
+}
+
 func TestLatestGetsTagsFromRepositoryOnlyOnHead(t *testing.T) {
 	dir := e2e.CreateTempGitDir()
 	e2e.CreateTag(dir, "app-0.1.0")
@@ -132,10 +150,19 @@ func TestLatestOpensRepositoryForStageWithNoStageTagsFails(t *testing.T) {
 	check.Assert(t, err != nil, "expecting error to not be nil, got %v", err)
 }
 
+func TestLatestOpensRepositoryForStageWithNoStageTagsFails_requiresPlusSeparator(t *testing.T) {
+	dir := e2e.CreateTempGitDir()
+	e2e.CreateTag(dir, "app-0.1.0-promoted")
+
+	command := exec.Command(e2e.CDX, "tag", "latest", "-n", "app", "promoted")
+	err := command.Run()
+	check.Assert(t, err != nil, "expecting error to not be nil, got %v", err)
+}
+
 func TestLatestGetsTagsFromRepositoryForStage(t *testing.T) {
 	dir := e2e.CreateTempGitDir()
 	e2e.CreateTag(dir, "app-0.1.0")
-	e2e.CreateTag(dir, "app-0.1.0-promoted")
+	e2e.CreateTag(dir, "app-0.1.0+promoted")
 
 	command := exec.Command(e2e.CDX, "tag", "latest", "-n", "app", "promoted")
 	var stdOut bytes.Buffer
@@ -151,7 +178,7 @@ func TestLatestGetsTagsFromRepositoryForStage(t *testing.T) {
 func TestLatestGetsTagsFromRepositoryForStageWhenHeadIsNotTagged(t *testing.T) {
 	dir := e2e.CreateTempGitDir()
 	e2e.CreateTag(dir, "app-0.1.0")
-	e2e.CreateTag(dir, "app-0.1.0-promoted")
+	e2e.CreateTag(dir, "app-0.1.0+promoted")
 	e2e.CreateCommit(dir, "commit 2")
 
 	command := exec.Command(e2e.CDX, "tag", "latest", "-n", "app", "promoted")
@@ -168,10 +195,10 @@ func TestLatestGetsTagsFromRepositoryForStageWhenHeadIsNotTagged(t *testing.T) {
 func TestLatestGetsTagsFromRepositoryForStageForMultipleCommits(t *testing.T) {
 	dir := e2e.CreateTempGitDir()
 	e2e.CreateTag(dir, "app-0.1.0")
-	e2e.CreateTag(dir, "app-0.1.0-promoted")
+	e2e.CreateTag(dir, "app-0.1.0+promoted")
 	e2e.CreateCommit(dir, "commit 2")
 	e2e.CreateTag(dir, "app-0.2.0")
-	e2e.CreateTag(dir, "app-0.2.0-promoted")
+	e2e.CreateTag(dir, "app-0.2.0+promoted")
 	e2e.CreateCommit(dir, "commit 3")
 
 	command := exec.Command(e2e.CDX, "tag", "latest", "-n", "app", "promoted")
@@ -185,10 +212,56 @@ func TestLatestGetsTagsFromRepositoryForStageForMultipleCommits(t *testing.T) {
 	check.Equals(t, "0.2.0\n", stdOut.String())
 }
 
+func TestLatestGetsTagsFromRepositoryForStageForMultipleCommits_Prerelease(t *testing.T) {
+	dir := e2e.CreateTempGitDir()
+	e2e.CreateTag(dir, "app-0.1.0-rc1")
+	e2e.CreateTag(dir, "app-0.1.0-rc2")
+	e2e.CreateTag(dir, "app-0.1.0")
+	e2e.CreateTag(dir, "app-0.1.0+promoted")
+	e2e.CreateCommit(dir, "commit 2")
+	e2e.CreateTag(dir, "app-0.2.0")
+	e2e.CreateTag(dir, "app-0.2.0-rc1")
+	e2e.CreateTag(dir, "app-0.2.0-rc2")
+	e2e.CreateTag(dir, "app-0.2.0+promoted")
+	e2e.CreateCommit(dir, "commit 3")
+
+	command := exec.Command(e2e.CDX, "tag", "latest", "-n", "app", "promoted")
+	var stdOut bytes.Buffer
+	var stdErr bytes.Buffer
+	command.Stdout = &stdOut
+	command.Stderr = &stdErr
+	err := command.Run()
+	check.Equals(t, "", stdErr.String())
+	check.Ok(t, err)
+	check.Equals(t, "0.2.0\n", stdOut.String())
+}
+
+func TestLatestGetsTagsFromRepositoryForStageForMultipleCommits_PrereleaseIgnored(t *testing.T) {
+	dir := e2e.CreateTempGitDir()
+	e2e.CreateTag(dir, "app-0.1.0-rc1")
+	e2e.CreateTag(dir, "app-0.1.0-rc2")
+	e2e.CreateTag(dir, "app-0.1.0+promoted")
+	e2e.CreateCommit(dir, "commit 2")
+	e2e.CreateTag(dir, "app-0.2.0-rc1")
+	e2e.CreateTag(dir, "app-0.2.0-rc2")
+	e2e.CreateTag(dir, "app-0.2.0-rc2+promoted")
+	e2e.CreateCommit(dir, "commit 3")
+
+	command := exec.Command(e2e.CDX, "tag", "latest", "-n", "app", "promoted")
+	var stdOut bytes.Buffer
+	var stdErr bytes.Buffer
+	command.Stdout = &stdOut
+	command.Stderr = &stdErr
+	err := command.Run()
+	check.Equals(t, "", stdErr.String())
+	check.Ok(t, err)
+	check.Equals(t, "0.1.0\n", stdOut.String())
+}
+
 func TestLatestGetsTagsFromRepositoryForStageForMultipleCommits_onlyPromoted(t *testing.T) {
 	dir := e2e.CreateTempGitDir()
 	e2e.CreateTag(dir, "app-0.1.0")
-	e2e.CreateTag(dir, "app-0.1.0-promoted")
+	e2e.CreateTag(dir, "app-0.1.0+promoted")
 	e2e.CreateCommit(dir, "commit 2")
 	e2e.CreateTag(dir, "app-0.2.0")
 	e2e.CreateTag(dir, "app-0.2.0")
@@ -208,10 +281,10 @@ func TestLatestGetsTagsFromRepositoryForStageForMultipleCommits_onlyPromoted(t *
 func TestLatestGetsTagsFromRepositoryForStageOnlyOnHead(t *testing.T) {
 	dir := e2e.CreateTempGitDir()
 	e2e.CreateTag(dir, "app-0.1.0")
-	e2e.CreateTag(dir, "app-0.1.0-promoted")
+	e2e.CreateTag(dir, "app-0.1.0+promoted")
 	e2e.CreateCommit(dir, "commit 2")
 	e2e.CreateTag(dir, "app-0.2.0")
-	e2e.CreateTag(dir, "app-0.2.0-promoted")
+	e2e.CreateTag(dir, "app-0.2.0+promoted")
 	_ = exec.Command("git", "checkout", "HEAD~1", "--detach").Run()
 
 	command := exec.Command(e2e.CDX, "tag", "latest", "-n", "app", "promoted", "--head")
