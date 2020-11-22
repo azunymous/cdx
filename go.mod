@@ -3,6 +3,7 @@ module github.com/azunymous/cdx
 go 1.14
 
 require (
+	github.com/blang/semver/v4 v4.0.0
 	github.com/go-git/go-billy/v5 v5.0.0
 	github.com/go-git/go-git/v5 v5.0.0
 	github.com/google/go-cmp v0.4.0 // indirect

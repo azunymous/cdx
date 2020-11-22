@@ -2,6 +2,8 @@
 package gogit
 
 import (
+	"github.com/azunymous/cdx/parse"
+	"github.com/blang/semver/v4"
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing"
 	"github.com/sirupsen/logrus"
@@ -84,8 +86,16 @@ func (r *Repo) TagsForModule(module string, stage ...string) ([]string, error) {
 		}
 		return nil
 	})
-	sort.Strings(t)
+	sortSemanticVers(t)
 	return t, nil
+}
+
+func sortSemanticVers(t []string) {
+	sort.Slice(t, func(i, j int) bool {
+		iVer := semver.MustParse(parse.Version(t[i]))
+		jVer := semver.MustParse(parse.Version(t[j]))
+		return iVer.LE(jVer)
+	})
 }
 
 func (r *Repo) annotatedMatch(reference *plumbing.Reference, hash *plumbing.Hash, regex *regexp.Regexp) bool {

@@ -413,11 +413,11 @@ func TestTagsForModuleForMultipleCommitsAndTags(t *testing.T) {
 	check.Equals(t, []string{"app-0.0.1", "app-0.0.2"}, tagsForModule)
 }
 
-func TestTagsForModuleIsSorted(t *testing.T) {
+func TestTagsForModuleIsSorted_Patch(t *testing.T) {
 	fs := memfs.New()
 	createGitRepo(fs)
 	var expectedTags []string
-	for i := 0; i < 10; i++ {
+	for i := 0; i < 101; i++ {
 		is := strconv.Itoa(i)
 		createCommit(fs, "New Version "+is, "Hello world "+is)
 		tag := "app-0.0." + is
@@ -428,7 +428,45 @@ func TestTagsForModuleIsSorted(t *testing.T) {
 	repo := newTestRepo(fs)
 	tagsForModule, err := repo.TagsForModule("app")
 	check.Ok(t, err)
-	check.Equals(t, 10, len(tagsForModule))
+	check.Equals(t, 101, len(tagsForModule))
+	check.Equals(t, expectedTags, tagsForModule)
+}
+
+func TestTagsForModuleIsSorted_Minor(t *testing.T) {
+	fs := memfs.New()
+	createGitRepo(fs)
+	var expectedTags []string
+	for i := 0; i < 101; i++ {
+		is := strconv.Itoa(i)
+		createCommit(fs, "New Version "+is, "Hello world "+is)
+		tag := "app-0." + is + ".0"
+		createVersionTag(fs, tag)
+		expectedTags = append(expectedTags, tag)
+	}
+
+	repo := newTestRepo(fs)
+	tagsForModule, err := repo.TagsForModule("app")
+	check.Ok(t, err)
+	check.Equals(t, 101, len(tagsForModule))
+	check.Equals(t, expectedTags, tagsForModule)
+}
+
+func TestTagsForModuleIsSorted_Major(t *testing.T) {
+	fs := memfs.New()
+	createGitRepo(fs)
+	var expectedTags []string
+	for i := 0; i < 101; i++ {
+		is := strconv.Itoa(i)
+		createCommit(fs, "New Version "+is, "Hello world "+is)
+		tag := "app-" + is + ".0.0"
+		createVersionTag(fs, tag)
+		expectedTags = append(expectedTags, tag)
+	}
+
+	repo := newTestRepo(fs)
+	tagsForModule, err := repo.TagsForModule("app")
+	check.Ok(t, err)
+	check.Equals(t, 101, len(tagsForModule))
 	check.Equals(t, expectedTags, tagsForModule)
 }
 
