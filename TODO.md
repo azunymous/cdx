@@ -1,12 +1,13 @@
 # TODO
-- pass around a logger of sorts
+- [ ] pass around a logger of sorts
 
-- Change cache to be separate from the server deployment 
-- Add optional password protection to patches
-- Prevent patches from being overriden
+- [x] Remove alpha cdx sharing
 
-- Support annotated tags for `latest` command with full test coverage
+- [ ] Support annotated tags for `latest` command with full test coverage
+- [ ] For the above consider using straight git commands and removing gogit
 
-- Refactor end to end tests to reuse setup and assertions 
-- Refactor unit tests for gogit to use nested test tables so multiple 
+- [ ] Fix major bug with sorting unnaturally
+
+- [ ] Refactor end to end tests to reuse setup and assertions 
+- [ ] Refactor unit tests for gogit to use nested test tables so multiple 
 combinations of tests can be run and reused 

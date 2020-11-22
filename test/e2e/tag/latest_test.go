@@ -80,6 +80,24 @@ func TestLatestGetsTagsFromRepositoryForMultipleCommits(t *testing.T) {
 	check.Equals(t, "", stdErr.String())
 }
 
+func DisabledTestLatestGetsTagsFromRepositoryForMultipleCommits_UnnaturalSorting(t *testing.T) {
+	dir := e2e.CreateTempGitDir()
+	e2e.CreateTag(dir, "app-0.99.0")
+	e2e.CreateCommit(dir, "commit 2")
+	e2e.CreateTag(dir, "app-0.100.0")
+	e2e.CreateCommit(dir, "commit 3")
+
+	command := exec.Command(e2e.CDX, "tag", "latest", "-n", "app")
+	var stdOut bytes.Buffer
+	var stdErr bytes.Buffer
+	command.Stdout = &stdOut
+	command.Stderr = &stdErr
+	err := command.Run()
+	check.Ok(t, err)
+	check.Equals(t, "0.100.0\n", stdOut.String())
+	check.Equals(t, "", stdErr.String())
+}
+
 func TestLatestGetsTagsFromRepositoryOnlyOnHead(t *testing.T) {
 	dir := e2e.CreateTempGitDir()
 	e2e.CreateTag(dir, "app-0.1.0")
