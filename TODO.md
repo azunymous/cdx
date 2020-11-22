@@ -6,7 +6,7 @@
 - [ ] Support annotated tags for `latest` command with full test coverage
 - [ ] For the above consider using straight git commands and removing gogit
 
-- [ ] Fix major bug with sorting unnaturally
+- [ ] Support pre-release tags for latest and promotions correctly
 
 - [ ] Refactor end to end tests to reuse setup and assertions 
 - [ ] Refactor unit tests for gogit to use nested test tables so multiple 

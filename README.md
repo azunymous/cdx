@@ -38,7 +38,7 @@ This results in a tag like the following:
 <module/app name>-<semantic version>+<promotion-stage>
 ```
 
-e.g `my-app-1.0.0-rc1+passed-extended-tests`
+e.g `my-app-1.0.0+passed-extended-tests`
 
 These are currently lightweight tags.
 
@@ -89,3 +89,7 @@ dependencies
 - `cdx tag` does not enforce ordered tagging. If you run `cdx tag release` from a branch or on an
 untagged commit, it will search for the highest version across all references. The exception to this
 is if the `--push` flag is used, which makes sure the current commit is on `origin/master`.
+- Pre-releases are currently ignored. `my-app-1.0.0-rc1+passed-extended-tests` is ignored and
+the latest version for the `passed-extended-tests` stage is `my-app-0.999.0+passed-extended-tests`
+for example. The same applies for finding the latest tag in general: `0.1.0` vs `0.2.0-RC1`, 
+`0.1.0` would be returned as the latest version. 
